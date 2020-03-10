@@ -1,23 +1,17 @@
 package database;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import javax.xml.transform.*;
+
 import java.sql.Connection;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Formatter;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMSource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -27,8 +21,8 @@ import com.mysql.jdbc.ResultSet;
 public class XML {
 	
 	static private String stringRegistro;
-	
 	static private String path = System.getProperty("user.home") + "\\Desktop\\registro.xml";
+
 
 	public static void exportarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
 		
@@ -66,10 +60,10 @@ public class XML {
 		    transformer.transform(domSource, sr);
 		    stringRegistro = sw.toString();
 		    
-			BufferedWriter writer = new BufferedWriter (new FileWriter("%USERPROFILE%\\Desktop\\registro.xml"));
+			BufferedWriter writer = new BufferedWriter (new FileWriter(path));
 			writer.write(stringRegistro);
 			writer.close();
-			System.out.println("Registro actualizado.\n");
+			System.out.println("Registro exportado.\n");
 			
 			conexion.close();
 		    rs.close();
@@ -77,10 +71,6 @@ public class XML {
 	}
 	
 	public static String importarRegistro() {
-		return null;
-	}
-	
-	public static String importarHistorial() {
 		return null;
 	}
 }
