@@ -2,7 +2,10 @@
 package database;
 
 import java.io.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import com.mysql.jdbc.ResultSet;
 import javax.xml.parsers.*;
 import javax.xml.transform.TransformerException;
@@ -32,7 +35,6 @@ public class Conexion {
 			conexion = DriverManager.getConnection(url, username, password);
 			
 			Statement st = conexion.createStatement();
-			
 			java.sql.ResultSet rs = st.executeQuery("SELECT * FROM student;");
 			XML.exportarRegistro((ResultSet) rs, conexion);
 			
