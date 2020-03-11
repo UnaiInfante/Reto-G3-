@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry excluding="database/" kind="src" path="src"/>
+	<classpathentry excluding="database/|database/" kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.8.0_241/lib/ext/mysql-connector.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
