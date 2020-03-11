@@ -8,17 +8,38 @@
 			 static {
 			     
 					
-						System.out.println("+---------------------+");
-			            System.out.println("|"+"CONCESIONARIO ZUBIRI "+"|");
-						System.out.println("+---------------------+");
-			            System.out.println("|"+"1. Ver               "+"|");
-			            System.out.println("|"+"2. Comprar           "+"|");
-			            System.out.println("|"+"3. Vender            "+"|");
-			            System.out.println("|"+"4. Pintar            "+"|");
-			            System.out.println("|"+"5. Salir             "+"|");
-			            System.out.println("+---------------------+");
+					
+			            System.out.println("CONCESIONARIO ZUBIRI ");
+					
+			            System.out.println("1. Ver");
+			            System.out.println("2. Comprar ");
+			            System.out.println("3. Vender");
+			            System.out.println("4. Pintar");
+			            System.out.println("5. Salir");
+			       
 			         
 			      	}
+		 	  void cuadrito() {
+	    		   
+		    	   System.out.print("+");
+		    	   for(int x=0;x<30;x++) {
+		    		   System.out.println("-");
+		    	   
+		    		   //for(int x=0;x<String.l)
+		    		   
+		    		   
+		    		   
+		    	   
+		    	//	   System.out.print("+");
+			  //  	   for(int x1=0;x1<String.length();x1++) {
+			    //		   System.out.println("-");
+		    	   
+		    	   
+		    //	   }
+		    	 
+		    	   
+		       }
+		 	  }
 
 		    public static void main(String[] args) {
 		    	int num=sn.nextInt();
@@ -26,41 +47,32 @@
 		               new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 		           } catch (Exception e) {
 		           }
-		           
+		      
+		    
 		              
 		           
 		    	
-		    	while(num!=5) {
-		    		System.out.println("+--------------------------------------------------------------------------+");
+		    switch(num) {
+		    
 		    		
-		 if(num==1){
-			 
-		 }
-		 else {
-		 if(num==2){
-			 	System.out.print("|");
+		    		case(1):{
+		    		}
+		    		case(2):{
+			 	
 				System.out.print("1. Añadir un coche                                                        ");
-				System.out.println("|"); 
-				System.out.print("|");
+				
 				System.out.print("2. Añadir varios                                                          ");
-				System.out.println("|");
-				System.out.println("+--------------------------------------------------------------------------+");
-				num=sn.nextInt();
-				switch(num){
+			
 				
-				case(1):///comprarVehiculo();break;
-				case(2)://Clase ImportaarVarios()
+				int n =sn.nextInt();
+				switch(n){
 				
-				}
-				while(num!=0);
-				 System.out.println("+--------------------------------------------------------------------------+");
-		 }
-		 
-		 
-		 
-		 else {
-		 
-		 if(num==3){
+				case(2):///comprarVehiculo();break;
+				case(3)://Clase ImportaarVarios()
+				
+				}while(n!=0);}
+				
+		    		case(3):{
 			 	System.out.print("|");
 				System.out.print("1. Vender un coche                                                        ");
 				System.out.println("|"); 
@@ -68,31 +80,28 @@
 				System.out.print("2. Vender varios                                                          ");
 				System.out.println("|");
 				System.out.println("+--------------------------------------------------------------------------+");
-				num=sn.nextInt();
-				
-				switch(num){
-				
-				case(1):///comprarVehiculo();break;
-				case(2)://Clase ImportaarVarios()
-				
+				int n=sn.nextInt();
+				switch(n){
+				case(1):{
+				///comprarVehiculo();
+				break;}
+				case(2):{//Clase ImportaarVarios()
 				}
-				while(num!=0);
-				 System.out.println("+--------------------------------------------------------------------------+");
-		 }else {
-		 if(num==4){
+				case(4):{ 
+				 }
+				case(5):{
+					 }
+				case(6):{
+					
+				}
+ 
+			 
 	 
-		 }
-		 }
-		    
-		     
-		 }
-		 }
-		 System.out.print("|");
-		 System.out.println("+--------------------------------------------------------------------------+");
-		 num=sn.nextInt(); 
-		 }
-		    }}
-		    
+		 
+		 }while(num!=5);
+		 
+		   
+		    		}}}}
 		
 		 
 		

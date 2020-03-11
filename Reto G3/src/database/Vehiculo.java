@@ -1,4 +1,4 @@
-package database;
+
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -48,7 +48,7 @@ abstract class Vehiculo {
 		}
 }
 	
-	public void venderVehiculo(char tipo, Connection conexion) throws SQLException {
+	public void venderVehiculo(char tipo, Conexion conexion) throws SQLException {
 
 		System.out.println("Write some data:");
 		System.out.println("NAME:");

@@ -1,11 +1,9 @@
-package database;
-
 public class Camion extends Vehiculo {
 	
 	private int carga;
 	private String tipoMercancia;
 	
-	Coche(String color, boolean isPainted, int numAsientos, float precio, String serie, int carga,String tipoMercancia) {
+	Camion(String color, boolean isPainted, int numAsientos, float precio, String serie, int carga,String tipoMercancia) {
 		super(color, isPainted, numAsientos, precio, serie);
 		this.carga = carga;
 		this.tipoMercancia = tipoMercancia;
