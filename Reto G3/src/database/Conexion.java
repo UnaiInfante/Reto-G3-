@@ -10,7 +10,7 @@ import javax.xml.transform.TransformerException;
 /**
  * Conecta la aplicación con la base de datos.
  * 
- * @author Gerardo Ares
+ * @author Gerardo Ares ctm
  * @version 0.1
  */
 public class Conexion {

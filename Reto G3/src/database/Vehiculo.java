@@ -8,7 +8,7 @@ import com.mysql.jdbc.Connection;
 import console.Console;
 
 abstract class Vehiculo {
-	
+	//**ALfinal pusiste un clase abstracta jajajaj k se joda tu puta interfaz ctm
 	private String color;
 	private boolean isPainted;
 	private int numAsientos;
