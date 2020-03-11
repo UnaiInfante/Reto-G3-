@@ -2,9 +2,7 @@ package database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import com.mysql.jdbc.Connection;
-
 import console.Console;
 
 abstract class Vehiculo {
@@ -32,19 +30,14 @@ abstract class Vehiculo {
 	}
 	
 	public void comprarVehiculo(char tipo, Connection conexion) throws SQLException {
-		System.out.println("Write some data:");
-		System.out.println("NAME:");
-		String name = Console.readString();
-		System.out.println("SCHOOL:");
-		String school = Console.readString();
+		System.out.println("Inserta los datos del vehículo: ");
 		
-		PreparedStatement ps = conexion.prepareStatement("INSERT INTO retog3.student (studentName, studentSchool) VALUES " + 
-				" ('" + name + "', " + "'"+ school + "');");	
+		PreparedStatement ps = conexion.prepareStatement("INSERT INTO retog3.tabla (ATRIBUTOS) VALUES " + 
+				" ('" + color + "', " + "" + numAsientos + ");");	
 		
 		int status = ps.executeUpdate();	
 		if(status != 0) {
-			System.out.println("Conexión completa.");
-			System.out.println("Los datos fueron INSERTADOS.");
+			System.out.println("Datos insertados.");
 		}
 }
 	
@@ -64,6 +57,10 @@ abstract class Vehiculo {
 			System.out.println("Conexión completa.");
 			System.out.println("Los datos fueron INSERTADOS.");
 		}
+	}
+	
+	public void display() {
+		System.out.println(toString());
 	}
 	
 	@Override 

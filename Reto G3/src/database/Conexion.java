@@ -1,67 +1,75 @@
 //TODO paquetes necesarios para la ejecución
 package database;
 
-import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
-import com.mysql.jdbc.ResultSet;
-import javax.xml.parsers.*;
-import javax.xml.transform.TransformerException;
 
 /**
- * Conecta la aplicación con la base de datos.
+ * La clase {@code Conexion} es la responsable de establecer la 
+ * conexión a la base de datos. <b>El usuario no tendrá ninguna interacción
+ * con esta clase más que al iniciar sesión en la base de MySQL</b>. Esta clase
+ * no puede ser heredada ni instanciada por la función que tiene en el programa.
  * 
- * @author Gerardo Ares
- * @version 0.1
+ * @author G3
+ * @version 1.0
+ * @see Menu
  */
-public class Conexion {
+ public final class Conexion {
 	
-	static Connection conexion = null;
+	 /** El objecto tipo {@code Connection} que usaremos en la conexión.*/
+	static Connection conexion;
+	
+	/** Las siguientes variables de tipo {@code String} componen de datos que necesita el 
+	 * tipo de conexión para conectarse con la base de datos:
+	 * <p>
+	 * <ul>
+	 * <li>{@code String name}: Es el nombre de la base de datos.
+	 * <li>{@code url}: Es la dirección de la base de datos en el servidor local. Esa variable
+	 *     se concatena con {@code name} para formar la url necesaria para la conexión. 
+	 * <li>{@code username}: El usuario del servidor.
+	 * <li>{@code password}: La contraseña del usuario. Esta contraseña será restringida al administrador
+	 *     de la base de datos, y solo se tendrá que escribir una vez para después acceder a la aplicación
+	 *     del programa y <em>no</em> interactuará con el usuario de forma alguna.
+	 * </ul>
+	 * </p>
+	 */
 	static String name = "retog3";
 	static String url = "jdbc:mysql://localhost:3306/" + name + "?characterEncoding=latin1";
 	static String username = "root";
 	static String password = "root";
 	
 	/**
-	 * Conecta la aplicación a la base de datos.
+	 * Con el método en {@code private}, evitamos instanciar la clase.
+	 */
+	
+	private void Conexion() {}
+	
+	/**
+	 * Crea un objeto de clase {@code Connection} con su Driver necesario
+	 * para la conexión de la base de datos.
 	 */
 	public static void conectarBase() {
 		
 		try {
+			System.out.print("Usuario: ");
+			username = Console.readString();
+			System.out.print("\nContraseña: ");
+			password = Console.readString();
 			
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conexion = DriverManager.getConnection(url, username, password);
-			
-			Statement st = conexion.createStatement();
-			java.sql.ResultSet rs = st.executeQuery("SELECT * FROM student;");
-			XML.exportarRegistro((ResultSet) rs, conexion);
+			System.out.println("Conexión completada.");
 			
 		} catch (InstantiationException e) {
-			//TODO   Auto-generated catch block
 			System.err.print("ERROR: No se pude instanciar esta clase.");
-			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			System.err.print("ERROR: Acceso illegal en [SAMPLE]");
-			e.printStackTrace();
+			System.err.print("ERROR: El método no tiene acceso a la definición que intenta leer.");
 			// TODO Auto-generated catch block
 		} catch (ClassNotFoundException e) {
 			System.err.print("ERROR: No se ha encontrado la clase.");
-			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			System.err.print("ERROR: Hubo un problema de conexión.");
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.print("ERROR: Hubo un problema en la base de datos.");
 		}finally {
 			System.out.println("Saliendo...");
 		}
