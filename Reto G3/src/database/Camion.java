@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package database;
 
 public class Camion extends Vehiculo {
