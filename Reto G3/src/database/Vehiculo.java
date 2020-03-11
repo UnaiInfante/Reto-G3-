@@ -29,17 +29,27 @@ abstract class Vehiculo {
 		this.numAsientos = numAsientos;
 		this.precio = precio;
 		this.serie = serie;
+		
+		
 	}
 	
-	public void comprarVehiculo(char tipo, Connection conexion) throws SQLException {
-		System.out.println("Write some data:");
-		System.out.println("NAME:");
-		String name = Console.readString();
-		System.out.println("SCHOOL:");
-		String school = Console.readString();
+	public void comprarVehiculo(char tipo, Conexion conexion) throws SQLException {
+		System.out.println("Write data:");
+		System.out.println("MATRICULA:");
+		int Matricula = Console.readString();
+		System.out.println("NUMERO DE BASTIDOR:");
+		int numBastidor = Console.readInt();
+		System.out.println("COLOR DEL VEHICULO:");
+		String color =Console.readString();
+		System.out.println("NUMERO DE ASIENTOS:");
+		int numAsientos =Console.readInt();
+		System.out.println("PRECIO:");
+		int precio =Console.readInt();
+		System.out.println("SERIE:");
+		int serie =Console.readInt();
 		
 		PreparedStatement ps = conexion.prepareStatement("INSERT INTO retog3.student (studentName, studentSchool) VALUES " + 
-				" ('" + name + "', " + "'"+ school + "');");	
+				" ('" + Matricula + "', " + "'"+numBastidor + "',"+"'"+color+"', " + "'"+numAsientos + "', " + "'"+precio + "', " + "'"+serie + "');");	
 		
 		int status = ps.executeUpdate();	
 		if(status != 0) {
@@ -52,12 +62,12 @@ abstract class Vehiculo {
 
 		System.out.println("Write some data:");
 		System.out.println("NAME:");
-		String name = Console.readString();
+		String matricula = Console.readString();
 		System.out.println("SCHOOL:");
 		String school = Console.readString();
 		
-		PreparedStatement ps = conexion.prepareStatement("INSERT INTO retog3.student (studentName, studentSchool) VALUES " + 
-				" ('" + name + "', " + "'"+ school + "');");	
+		PreparedStatement ps = conexion.prepareStatement("DELETE retog3.student (studentName, studentSchool) VALUES " + 
+				" ('" + name + "');");	
 		
 		int status = ps.executeUpdate();	
 		if(status != 0) {

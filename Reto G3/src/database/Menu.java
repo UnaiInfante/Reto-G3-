@@ -42,6 +42,7 @@
 		 	  }
 
 		    public static void main(String[] args) {
+		    	
 		    	int num=sn.nextInt();
 		    	   try {
 		               new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -67,19 +68,15 @@
 				int n =sn.nextInt();
 				switch(n){
 				
-				case(2):///comprarVehiculo();break;
+				case(2): 
+					;break;
 				case(3)://Clase ImportaarVarios()
 				
 				}while(n!=0);}
 				
 		    		case(3):{
-			 	System.out.print("|");
 				System.out.print("1. Vender un coche                                                        ");
-				System.out.println("|"); 
-				System.out.print("|");
-				System.out.print("2. Vender varios                                                          ");
-				System.out.println("|");
-				System.out.println("+--------------------------------------------------------------------------+");
+				System.out.print("2. Vender varios                                                          ");	
 				int n=sn.nextInt();
 				switch(n){
 				case(1):{
