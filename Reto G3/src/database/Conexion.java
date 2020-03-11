@@ -11,9 +11,14 @@ import java.sql.SQLException;
  * con esta clase más que al iniciar sesión en la base de MySQL</b>. Esta clase
  * no puede ser heredada ni instanciada por la función que tiene en el programa.
  * 
+<<<<<<< HEAD
  * @author G3
  * @version 1.0
  * @see Menu
+=======
+ * @author Gerardo Ares ctm
+ * @version 0.1
+>>>>>>> ac4510cb01293c7bc9bb8f57d212134461cbf7a2
  */
  public final class Conexion {
 	
