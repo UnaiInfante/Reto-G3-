@@ -1,4 +1,3 @@
-//TODO paquetes necesarios para la ejecución
 package retog3;
 
 import java.sql.Connection;
