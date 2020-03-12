@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 /**
  * La clase {@code Conexion} es la responsable de establecer la 
- * conexión a la base de datos. Esta claseno puede ser heredada
+ * conexión a la base de datos. Esta clase no puede ser heredada
  *  ni instanciada por la función que tiene en el programa.
  * 
  * @author G3
@@ -53,17 +53,14 @@ import java.sql.SQLException;
  * mediante un {@code catch/try}, con mensajes personalizados del problema en
  * inglés.
  * 
- * @return
+ * @return  El objeto que servirá de conexión para la base de datos.
  */
 	public static Connection conectarBase() {
 		
 		try {
-			/*
-			 * Se puede usar la consola personalizada o con Scanner. Eso es opcional
-			 * Yo recomiendo que usen la consola de toda la vida, pero habrá que enseñarle
-			 * a Oier cómo se utiliza.
-			 */
 			
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+
 			System.out.print("\nContraseña: ");
 			password = Console.readString();
 			System.out.print("\nID de la base de datos: ");
@@ -71,7 +68,6 @@ import java.sql.SQLException;
 			
 			System.out.println("Conectando...");
 			url = "jdbc:mysql://localhost:3306/" + name + "?characterEncoding=latin1";
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			conexion = DriverManager.getConnection(url, username, password);
 			
 		} catch (InstantiationException e) {

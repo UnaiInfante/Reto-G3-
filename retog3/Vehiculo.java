@@ -1,9 +1,9 @@
 package retog3;
 
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import com.mysql.jdbc.Connection;
 
 abstract class Vehiculo {
 	

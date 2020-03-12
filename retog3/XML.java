@@ -1,7 +1,12 @@
 package retog3;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
@@ -18,16 +23,48 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.mysql.jdbc.ResultSet;
-
-
+/**
+ * Esta clase se encarga de importar y exportar los datos de la base MySQL
+ * en formato XML. dado que no tiene constancia sobre qué se inserta (solo la
+ * instrucción que le llega), los archivos que maneje tienen un formato general
+ * y puede desde el registro completo hasta un historial de la base de datos.
+ * 
+ * @author G3
+ *@version 1.0
+ */
 public final class XML {
 	
-	static String string;
+	/**
+	 * Es el {@code String} que usará para insertar el objeto {@code Document} en 
+	 * el archivo que crearemos. 
+	 */
+	private static String string;
 	
-	public static String importarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	private static String path = System.getProperty("user.home") + "/Desktop/registro.xml";
+	/** Evitamos instanciar la clase con el constructor en {@code private}. */
+	private XML() {}
+	
+	/**
+	 * Importa un registro XML a un archivo a un lugar específico. Este proceso
+	 * es automático: Crea un archivo con el registro o lo sobreescribe si ya existe
+	 * uno.
+	 * 
+	 * @param rs La instrucción SQL que tomará de referencia
+	 * @param conexion La conexión de la base de datos.
+	 * 
+	 * @throws SQLException -
+	 * @throws ParserConfigurationException -
+	 * @throws TransformerException -
+	 * @throws InstantiationException -
+	 * @throws IllegalAccessException -
+	 * @throws IOException -
+	 * @throws ClassNotFoundException -
+	 */
+	public static void importarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
 		
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		File file = new File(path);
+		FileWriter fw = new FileWriter(file);
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document doc = builder.newDocument();
@@ -59,8 +96,12 @@ public final class XML {
 		    StreamResult sr = new StreamResult(sw);
 		    transformer.transform(domSource, sr);
 		    string = sw.toString();
-		    rs.close();
 		    
-		   return string;
+		    BufferedWriter bw = new BufferedWriter(fw);
+		    bw.write(string);
+		    bw.flush();
+		    bw.close();
+		    rs.close();
+		    System.out.println("Registro importado.");
 	}
 }
