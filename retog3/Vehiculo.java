@@ -27,12 +27,10 @@ abstract class Vehiculo {
 		this.numAsientos = numAsientos;
 		this.precio = precio;
 		this.serie = serie;
-		
-		
 	}	
 	
 		public void comprarVehiculo(char tipo, Connection conexion) throws SQLException {
-			
+		
 		System.out.println("Write data:");
 		System.out.println("MATRICULA:");
 		int Matricula = Console.readInt();

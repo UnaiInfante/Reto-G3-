@@ -21,23 +21,17 @@ public class Menu {
 			XML.importarRegistro(rs, conexion);
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error con MySQL: " + e.getMessage());
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error de instanciación: " + e.getMessage());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error de acceso: " + e.getMessage());
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error de analización: " + e.getMessage());
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error con el objeto Transformer: " + e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error de I/O: " + e.getMessage());
 		}
 	}
 }
