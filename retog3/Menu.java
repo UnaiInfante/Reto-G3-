@@ -7,15 +7,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.Node;
 import javax.xml.transform.TransformerException;
 
 
 
 
 public class Menu {
-	/**
-	 * Metodo que imprime el menu
-	 */
+	
 	public void printMenu(){
 		System.out.println("CONCESIONARIO ZUBIRI");
 		System.out.print("1. Ver Stock");
@@ -28,13 +27,6 @@ public class Menu {
 	}
 	
 	
-	
-	/**
-	 *El objeto conexion sw crea  en el main del menu
-	 * para se mantenga conectada y no se borre.
-	 * @param args
-	 */
-	
 	public static void main(String[] args) {
 
 		Connection conexion = Conexion.conectarBase();
@@ -43,8 +35,8 @@ public class Menu {
 			
 			Statement sentencia = conexion.createStatement();
 			ResultSet rs = sentencia.executeQuery("SELECT * FROM student;");
-			XML.importarRegistro(rs, conexion);
-			
+			XML.exportarRegistro(rs, conexion);
+
 		} catch (SQLException e) {
 			System.err.println("Error con MySQL: " + e.getMessage());
 		} catch (InstantiationException e) {

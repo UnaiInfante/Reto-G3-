@@ -22,6 +22,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import org.xml.sax.*;
 
 /**
  * Esta clase se encarga de importar y exportar los datos de la base MySQL
@@ -60,7 +63,7 @@ public final class XML {
 	 * @throws IOException -
 	 * @throws ClassNotFoundException -
 	 */
-	public static void importarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
+	public static void exportarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
 		
 		File file = new File(path);
 		FileWriter fw = new FileWriter(file);
@@ -68,9 +71,9 @@ public final class XML {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document doc = builder.newDocument();
+	    
 	    Element results = doc.createElement("Results");
 	    doc.appendChild(results);
-	   
 	  	ResultSetMetaData rsmd = rs.getMetaData();
 		   int colCount = rsmd.getColumnCount();
 
@@ -103,5 +106,40 @@ public final class XML {
 		    bw.close();
 		    rs.close();
 		    System.out.println("Registro importado.");
+	} 
+
+	
+	public static void importarRegistro(ResultSet rs, Connection conexion) throws ParserConfigurationException, SAXException, IOException {
+		
+		File fXmlFile = new File(path);
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		Document doc = dBuilder.parse(fXmlFile);
+			
+		doc.getDocumentElement().normalize();
+
+		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+				
+		NodeList nList = doc.getElementsByTagName("staff");
+				
+		System.out.println("----------------------------");
+  
+		for (int temp = 0; temp < nList.getLength(); temp++) 
+		
+			Node nNode = nList.item(temp);
+		
+					
+			System.out.println("\nCurrent Element :" + nNode.getNodeName());
+					
+			
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+
+				Element eElement = (Element) nNode;
+
+				System.out.println("Staff id : " + eElement.getAttribute("id"));
+				System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
+				System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
+				System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
+				System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());
 	}
 }
