@@ -45,7 +45,7 @@ public final class XML {
 	private XML() {}
 	
 	/**
-	 * Exporta una base de datos en forma de registro XML a un archivo a un lugar específico. Este proceso
+	 * Importa un registro XML a un archivo a un lugar específico. Este proceso
 	 * es automático: Crea un archivo con el registro o lo sobreescribe si ya existe
 	 * uno.
 	 * 
@@ -60,11 +60,8 @@ public final class XML {
 	 * @throws IOException -
 	 * @throws ClassNotFoundException -
 	 */
-	public static void exportarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
+	public static void importarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
 		
-		/*
-		 * Creación del archivo y objeto Document XML.
-		 */
 		File file = new File(path);
 		FileWriter fw = new FileWriter(file);
 		
@@ -89,36 +86,22 @@ public final class XML {
 		      }
 		    }
 		   
-		   /*
-		    *Protocolo estándar de DOM.
-		    */
 		    DOMSource domSource = new DOMSource(doc);
 		    TransformerFactory tf = TransformerFactory.newInstance();
 		    Transformer transformer = tf.newTransformer();
 		    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 		    transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
-		    
-		    /*
-		     * Creación de objeto a archivo.
-		     */
 		    StringWriter sw = new StringWriter();
 		    StreamResult sr = new StreamResult(sw);
 		    transformer.transform(domSource, sr);
 		    string = sw.toString();
+		    
 		    BufferedWriter bw = new BufferedWriter(fw);
 		    bw.write(string);
 		    bw.flush();
 		    bw.close();
 		    rs.close();
 		    System.out.println("Registro importado.");
-	}
-	
-	/*
-	 * 
-	 */
-	public static void importarRegistro(ResultSet rs, Connection conexion) {
-		
-		
 	}
 }

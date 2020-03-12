@@ -41,12 +41,9 @@ public class Menu {
 					
 		try {
 			
-			/*
-			 * PRUEBAS
-			 */
 			Statement sentencia = conexion.createStatement();
 			ResultSet rs = sentencia.executeQuery("SELECT * FROM student;");
-			XML.exportarRegistro(rs, conexion);
+			XML.importarRegistro(rs, conexion);
 			
 		} catch (SQLException e) {
 			System.err.println("Error con MySQL: " + e.getMessage());
