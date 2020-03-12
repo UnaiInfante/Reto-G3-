@@ -22,13 +22,26 @@ public class Menu {
 		System.out.print("3. Vender Vehiculo");
 		System.out.print("4. Pintar vehiculo");
 		System.out.print("5. Salir");
-		int op =Console.readInt();
+		
 		
 	}
 	
 	
 	public static void main(String[] args) {
-
+Vehiculo t1 = new Camion(null, false, 0, 0, null, 0, null);
+		int op =Console.readInt();
+		
+		switch(op) {
+		case (1):break;
+		case (2):t1.comprarVehiculo();break;
+		case (3): t1.venderVehiculo(tipo, conexion);break;
+		case(4)://t1.pintarVehiculo();
+			break;
+		
+		}while(op!=5);
+		
+		
+		
 		Connection conexion = Conexion.conectarBase();
 					
 		try {
