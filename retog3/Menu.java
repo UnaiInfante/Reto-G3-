@@ -9,9 +9,34 @@ import java.sql.Statement;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+
+
+
 public class Menu {
-	public static void main(String[] args) {
+	/**
+	 * Metodo que imprime el menu
+	 */
+	public void printMenu(){
+		System.out.println("CONCESIONARIO ZUBIRI");
+		System.out.print("1. Ver Stock");
+		System.out.print("2. Comprar Vehiculo");
+		System.out.print("3. Vender Vehiculo");
+		System.out.print("4. Pintar vehiculo");
+		System.out.print("5. Salir");
+		int op =Console.readInt();
 		
+	}
+	
+	
+	
+	/**
+	 *El objeto conexion sw crea  en el main del menu
+	 * para se mantenga conectada y no se borre.
+	 * @param args
+	 */
+	
+	public static void main(String[] args) {
+
 		Connection conexion = Conexion.conectarBase();
 					
 		try {
