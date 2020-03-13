@@ -10,8 +10,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.Node;
 import javax.xml.transform.TransformerException;
 
-
-
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 public class Menu {
 	
@@ -26,29 +26,31 @@ public class Menu {
 		
 	}
 	
-	
 	public static void main(String[] args) {
 
-		Connection conexion = Conexion.conectarBase();
-					
 		try {
 			
+			Connection conexion = Conexion.conectarBase();
+
+			/*
 			Statement sentencia = conexion.createStatement();
 			ResultSet rs = sentencia.executeQuery("SELECT * FROM student;");
-			XML.exportarRegistro(rs, conexion);
-
-		} catch (SQLException e) {
-			System.err.println("Error con MySQL: " + e.getMessage());
-		} catch (InstantiationException e) {
-			System.err.println("Error de instanciación: " + e.getMessage());
-		} catch (IllegalAccessException e) {
-			System.err.println("Error de acceso: " + e.getMessage());
+			XML.exportarRegistro(rs, conexion);*/
+			XML.importarRegistro(conexion);
+		
 		} catch (ParserConfigurationException e) {
 			System.err.println("Error de analización: " + e.getMessage());
-		} catch (TransformerException e) {
-			System.err.println("Error con el objeto Transformer: " + e.getMessage());
 		} catch (IOException e) {
 			System.err.println("Error de I/O: " + e.getMessage());
+		} catch (SAXException e) {
+			System.err.println("Error SAX: " + e.getMessage());
+		} catch (DOMException e) {
+			System.err.println("ERROR DOM:" + e.getMessage());
+		} catch (SQLException e) {
+			//System.err.println("ERROR SQL:" + e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.println("ERROR: " + e.getMessage());
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,11 +21,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.xml.sax.*;
+import org.w3c.dom.Node;
 
 /**
  * Esta clase se encarga de importar y exportar los datos de la base MySQL
@@ -42,6 +44,12 @@ public final class XML {
 	 * el archivo que crearemos. 
 	 */
 	private static String string;
+	
+	/*
+	 * Prueba: Serán eliminados más tarde
+	 */
+	private static String studentName;
+	private static int studentAg;
 	
 	private static String path = System.getProperty("user.home") + "/Desktop/registro.xml";
 	/** Evitamos instanciar la clase con el constructor en {@code private}. */
@@ -107,39 +115,53 @@ public final class XML {
 		    rs.close();
 		    System.out.println("Registro importado.");
 	} 
-
 	
-	public static void importarRegistro(ResultSet rs, Connection conexion) throws ParserConfigurationException, SAXException, IOException {
+	/**
+	 * Lee un archivo en formato ".xml" y obtiene todos los datos en ella. En caso de que 
+	 * reciba un texto en otro formato lanzará una excepción que recogerá {@code Menu} en
+	 * el método main. 
+	 * 
+	 * @param conexion La conexión a donde enviará los datos.
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws SQLException 
+	 * @throws DOMException 
+	 */
+	public static void importarRegistro(Connection conexion) throws ParserConfigurationException, SAXException, IOException, DOMException, SQLException {
 		
-		File fXmlFile = new File(path);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(fXmlFile);
+		System.out.println("Escribe la dirección del archivo:");
+		path = "C:\\Users\\usuario\\Desktop\\registro.xml";
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document doc = builder.parse(path);
+		NodeList list = doc.getElementsByTagName("Row");
+		
+		for(int i = 0; i < list.getLength(); i++) {
 			
-		doc.getDocumentElement().normalize();
-
-		System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-				
-		NodeList nList = doc.getElementsByTagName("staff");
-				
-		System.out.println("----------------------------");
-  
-		for (int temp = 0; temp < nList.getLength(); temp++) 
-		
-			Node nNode = nList.item(temp);
-		
-					
-			System.out.println("\nCurrent Element :" + nNode.getNodeName());
-					
+			Node node = list.item(i);
 			
-			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-				Element eElement = (Element) nNode;
-
-				System.out.println("Staff id : " + eElement.getAttribute("id"));
-				System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
-				System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
-				System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
-				System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());
+			if(node.getNodeType() == Node.ELEMENT_NODE) {
+				
+				//Creating the first nodes
+				Element student = (Element) node;
+				NodeList studentList = student.getChildNodes();
+				System.out.println("----------------------");
+				System.out.println("\nStudent: " + (i + 1)+ "\n");
+				for(int j = 0; j < studentList.getLength(); j++) {
+					
+					//Creating the second nodes
+					Node node2 = studentList.item(j);
+					
+					if(node2.getNodeType() == Node.ELEMENT_NODE) {
+						Element studentAtt = (Element) node2;
+						
+						System.out.println(studentAtt.getTagName() + " = " + studentAtt.getTextContent()+ "\n");
+					}
+				}
+			}
+		}
+		System.out.println("-------------------\n");
+		System.out.println("Datos exportados a la base de datos.");
 	}
 }

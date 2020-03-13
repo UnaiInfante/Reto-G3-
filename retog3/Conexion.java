@@ -1,4 +1,3 @@
-//TODO paquetes necesarios para la ejecución
 package retog3;
 
 import java.sql.Connection;
@@ -23,7 +22,7 @@ import java.sql.SQLException;
 	 * la base de datos local que se use y el usuario no tendrá que interactuar con
 	 * este campo.
 	 */
-	private static String name;
+	private static String name = "retog3";
 	
 	/**
 	 * La dirección URL donde se encuentra la base de datos. Esta base 
@@ -42,7 +41,7 @@ import java.sql.SQLException;
 	/**
 	 * La contraseña correspondiente del usuario {@code username}. 
 	 */
-	private static String password;
+	private static String password = "root";
 	
 	/** Con el constructor en {@code private}, evitamos instanciar la clase. */
 	private Conexion() {}
@@ -54,31 +53,25 @@ import java.sql.SQLException;
  * inglés.
  * 
  * @return  El objeto que servirá de conexión para la base de datos.
+ * @throws ClassNotFoundException 
+ * @throws IllegalAccessException 
+ * @throws InstantiationException 
+ * @throws SQLException 
  */
-	public static Connection conectarBase() {
+	public static Connection conectarBase() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+			
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		
-		try {
-			
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-			System.out.print("\nContraseña: ");
-			password = Console.readString();
-			System.out.print("\nID de la base de datos: ");
-			name = Console.readString();
-			
-			System.out.println("Conectando...");
-			url = "jdbc:mysql://localhost:3306/" + name + "?characterEncoding=latin1";
-			conexion = DriverManager.getConnection(url, username, password);
-			
-		} catch (InstantiationException e) {
-			System.err.println("\nInstantiation Exception: " + e.getMessage());
-		} catch (IllegalAccessException e) {
-			System.err.println("\nIllegalAcess Exception: " + e.getMessage());
-		} catch (ClassNotFoundException e) {
-			System.err.println("\nClassNotFound Exception: " + e.getMessage());
-		} catch (SQLException e) {
-			System.err.println("\nMySQL Exception: " + e.getMessage());
-		}
+		/*
+		System.out.print("\nContraseña: ");
+		password = Console.readString();
+		System.out.print("\nID de la base de datos: ");
+		name = Console.readString();
+		*/
+		
+		System.out.println("Conectando...");
+		url = "jdbc:mysql://localhost:3306/" + name + "?characterEncoding=latin1";
+		conexion = DriverManager.getConnection(url, username, password);
 		System.out.println("Conexión completada.");
 		return conexion;
 	}
