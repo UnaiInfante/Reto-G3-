@@ -1,8 +1,14 @@
-DROP DATABASE IF EXISTS RETOG3;
-CREATE DATABASE RETOG3;
-USE RETOG3;
+DROP DATABASE IF EXISTS retog3;
+CREATE DATABASE retog3;
+USE retog3;
 
-CREATE TABLE VEHICULOS (
+CREATE TABLE registro (
+codRegistro int,
+usuario varchar(20),
+fecha date,
+PRIMARY KEY (codRegistro));
+
+CREATE TABLE vehiculos (
 numBastidor int,
 matricula varchar(7),
 precio double,
@@ -11,35 +17,30 @@ numAsientos int,
 codRegistro int,
 codSerie int,
 PRIMARY KEY (numBastidor),
-FOREIGN KEY (codRegistro) REFERENCES REGISTROS (codRegistro));
+FOREIGN KEY (codRegistro) REFERENCES registro (codRegistro));
 
-CREATE TABLE CAMIONES (
+CREATE TABLE camiones (
 numBastidor int,
 carga int,
 tipoMercancia char,
 PRIMARY KEY (numBastidor),
-FOREIGN KEY (numBastidor) REFERENCES VEHICULOS (numBastidor));
+FOREIGN KEY (numBastidor) REFERENCES vehiculos (numBastidor));
 
-CREATE TABLE COCHES (
+CREATE TABLE coches (
 numBastidor int,
 numPuertas int,
 capMaletero int,
 PRIMARY KEY (numBastidor),
-FOREIGN KEY (numBastidor) REFERENCES VEHICULOS (numBastidor));
+FOREIGN KEY (numBastidor) REFERENCES vehiculos (numBastidor));
 
-CREATE TABLE SERIE (
+CREATE TABLE series (
 codSerie int,
 fechaFabr date,
 marca varchar(20),
 modelo varchar(20),
 PRIMARY KEY (codSerie));
 
-CREATE TABLE VEHICULOSOPERACION (
-numBastidor int,
-codOperacion int,
-PRIMARY KEY (numBastidor, codOperacion));
-
-CREATE TABLE OPERACIONES (
+CREATE TABLE operaciones (
 codOperacion int,
 tipo varchar(10),
 usuario varchar(20),
@@ -47,8 +48,9 @@ fecha date,
 codRegistro int,
 PRIMARY KEY (codOperacion));
 
-CREATE TABLE REGISTRO (
-codRegistro int,
-fecha date,
-usuario varchar(20),
-PRIMARY KEY (codRegistro));
+CREATE TABLE vehiculos_operacion (
+numBastidor int,
+codOperacion int,
+PRIMARY KEY (numBastidor, codOperacion));
+
+
