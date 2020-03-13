@@ -47,8 +47,7 @@ public class Menu {
 		} catch (DOMException e) {
 			System.err.println("ERROR DOM:" + e.getMessage());
 		} catch (SQLException e) {
-			//System.err.println("ERROR SQL:" + e.getMessage());
-			e.printStackTrace();
+			System.err.println("ERROR SQL:" + e.getMessage());
 		} catch (Exception e) {
 			System.err.println("ERROR: " + e.getMessage());
 		}

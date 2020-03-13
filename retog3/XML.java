@@ -50,8 +50,10 @@ public final class XML {
 	 */
 	private static String studentName;
 	private static int studentAg;
+	private static Integer studentId;
 	
 	private static String path = System.getProperty("user.home") + "/Desktop/registro.xml";
+	
 	/** Evitamos instanciar la clase con el constructor en {@code private}. */
 	private XML() {}
 	
@@ -113,13 +115,15 @@ public final class XML {
 		    bw.flush();
 		    bw.close();
 		    rs.close();
+		    conexion.close();
 		    System.out.println("Registro importado.");
 	} 
 	
 	/**
 	 * Lee un archivo en formato ".xml" y obtiene todos los datos en ella. En caso de que 
 	 * reciba un texto en otro formato lanzará una excepción que recogerá {@code Menu} en
-	 * el método main. 
+	 * el método main. Para insertar los datos necesita ayuda del método {@code insertData} de 
+	 * tipo {@code private void} para simplificar el proceso.
 	 * 
 	 * @param conexion La conexión a donde enviará los datos.
 	 * @throws ParserConfigurationException
@@ -139,6 +143,7 @@ public final class XML {
 		
 		for(int i = 0; i < list.getLength(); i++) {
 			
+			//Esta es la lista de donde se sacarán los datos. Representan una tupla de la tabla.
 			Node node = list.item(i);
 			
 			if(node.getNodeType() == Node.ELEMENT_NODE) {
@@ -152,16 +157,46 @@ public final class XML {
 					
 					//Creating the second nodes
 					Node node2 = studentList.item(j);
-					
 					if(node2.getNodeType() == Node.ELEMENT_NODE) {
 						Element studentAtt = (Element) node2;
-						
-						System.out.println(studentAtt.getTagName() + " = " + studentAtt.getTextContent()+ "\n");
+						insertData(j, studentAtt, conexion);
 					}
 				}
 			}
 		}
 		System.out.println("-------------------\n");
 		System.out.println("Datos exportados a la base de datos.");
+		conexion.close();
+	}
+	
+	/**
+	 * Método auxiliar que inserta los datos del archivo XML en forma de
+	 * {@code Element} y se ejecutan las instrucciones con objetos de tipo
+	 * {@code PreparedStatement.}
+	 * 
+	 * @param j La iteración en la que se inserta los datos
+	 * @param studentAtt los datos del archivo XML
+	 * @param conexion la conexión donde se enviarán los datos.
+	 * @throws SQLException
+	 */
+	private static void insertData(int j, Element studentAtt, Connection conexion) throws SQLException {
+		if(j == 0) {
+			studentId = Integer.parseInt(studentAtt.getTextContent()); 
+			String statement = "INSERT INTO student (studentId)"
+					+ " VALUES (" + studentId.intValue() + ");";
+
+			PreparedStatement ps = conexion.prepareStatement(statement);
+			ps.executeUpdate();
+			
+		} else {
+
+			String statement = "UPDATE student" 
+					+ " SET " + studentAtt.getTagName() + "=" + "'" + studentAtt.getTextContent()  + "'"
+					+ " WHERE " + "studentId" + " = " + studentId.intValue() + ";";
+			
+			PreparedStatement ps = conexion.prepareStatement(statement);
+			ps.executeUpdate();
+			
+		}
 	}
 }
