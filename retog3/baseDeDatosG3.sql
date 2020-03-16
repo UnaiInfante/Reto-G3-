@@ -2,55 +2,151 @@ DROP DATABASE IF EXISTS retog3;
 CREATE DATABASE retog3;
 USE retog3;
 
-CREATE TABLE registro (
-codRegistro int,
-usuario varchar(20),
-fecha date,
-PRIMARY KEY (codRegistro));
-
 CREATE TABLE vehiculos (
-numBastidor int,
-matricula varchar(7),
-precio double,
-color varchar(15),
-numAsientos int,
-codRegistro int,
-codSerie int,
-PRIMARY KEY (numBastidor),
-FOREIGN KEY (codRegistro) REFERENCES registro (codRegistro));
+numBastidor int not null,
+matricula varchar(7) not null,
+tipo varchar(10) not null,
+precio double not null,
+color varchar(15) not null,
+numAsientos int not null,
+codSerie int not null,
+PRIMARY KEY (numBastidor));
 
 CREATE TABLE camiones (
-numBastidor int,
-carga int,
-tipoMercancia char,
+numBastidor int not null,
+matricula varchar(7) not null,
+precio double not null,
+color varchar(15) not null,
+numAsientos int not null,
+codSerie int not null,
+carga int not null,
+tipoMercancia char not null,
 PRIMARY KEY (numBastidor),
 FOREIGN KEY (numBastidor) REFERENCES vehiculos (numBastidor));
 
 CREATE TABLE coches (
-numBastidor int,
-numPuertas int,
-capMaletero int,
+numBastidor int not null,
+matricula varchar(7) not null,
+precio double not null,
+color varchar(15) not null,
+numAsientos int not null,
+codSerie int not null,
+numPuertas int not null,
+capMaletero int not null,
 PRIMARY KEY (numBastidor),
 FOREIGN KEY (numBastidor) REFERENCES vehiculos (numBastidor));
 
 CREATE TABLE series (
-codSerie int,
-fechaFabr date,
-marca varchar(20),
-modelo varchar(20),
+codSerie int not null,
+fechaFabr date not null,
+marca varchar(20) not null,
+modelo varchar(20) not null,
 PRIMARY KEY (codSerie));
 
-CREATE TABLE operaciones (
-codOperacion int,
-tipo varchar(10),
-usuario varchar(20),
-fecha date,
-codRegistro int,
-PRIMARY KEY (codOperacion));
+CREATE TABLE registro (
+numBastidor int not null,
+matricula varchar(7) not null,
+tipo varchar(10) not null,
+precio double not null,
+color varchar(15) not null,
+numAsientos int not null,
+codSerie int not null,
+accion varchar(10) not null,
+usuario varchar(20) not null,
+fecha date not null);
 
-CREATE TABLE vehiculos_operacion (
-numBastidor int,
-codOperacion int,
-PRIMARY KEY (numBastidor, codOperacion));
+-- TRIGGERS QUE ACTUALIZAN LAS COMPRAS--
+
+DROP TRIGGER IF EXISTS TR_comprar_coche;
+CREATE TRIGGER TR_comprar_coche
+BEFORE INSERT ON coches
+FOR EACH ROW
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (new.numBastidor, new.matricula, 'Coche', new.precio, new.color, new.numAsientos, new.codSerie, 'Compra', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_comprar_camion;
+CREATE TRIGGER TR_comprar_camion
+AFTER INSERT ON camiones
+FOR EACH ROW
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (new.numBastidor, new.matricula, 'Camion', new.precio, new.color, new.numAsientos, new.codSerie, 'Compra', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_insert_vehiculo;
+CREATE TRIGGER TR_insert_vehiculo
+BEFORE INSERT ON coches
+FOR EACH ROW
+INSERT INTO vehiculos (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie)
+VALUES (new.numBastidor, new.matricula, 'Coche', new.precio, new.color, new.numAsientos, new.codSerie);
+
+DROP TRIGGER IF EXISTS TR_insert_vehiculo2;
+CREATE TRIGGER TR_insert_vehiculo2
+BEFORE INSERT ON camiones
+FOR EACH ROW
+INSERT INTO vehiculos (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie)
+VALUES (new.numBastidor, new.matricula, 'Camion', new.precio, new.color, new.numAsientos, new.codSerie);
+
+-- TRIGGERS QUE ACTUALIZAN LAS VENTAS--
+
+DROP TRIGGER IF EXISTS TR_vender_coche;
+CREATE TRIGGER TR_vender_coche
+AFTER DELETE ON coches
+FOR EACH ROW 
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (old.numBastidor, old.matricula, 'Coche', old.precio, old.color, old.numAsientos, old.codSerie, 'Venta', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_vender_camion;
+CREATE TRIGGER TR_vender_camion
+AFTER DELETE ON camiones
+FOR EACH ROW 
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (old.numBastidor, old.matricula, 'Camion', old.precio, old.color, old.numAsientos, old.codSerie, 'Venta', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_delete_vehiculo;
+CREATE TRIGGER TR_delete_vehiculo
+AFTER DELETE ON coches
+FOR EACH ROW
+DELETE FROM vehiculos
+WHERE numBastidor = old.numBastidor;
+
+DROP TRIGGER IF EXISTS TR_delete_vehiculo2;
+CREATE TRIGGER TR_delete_vehiculo2
+AFTER DELETE ON camiones
+FOR EACH ROW
+DELETE FROM vehiculos
+WHERE numBastidor = old.numBastidor;
+
+-- TRIGGERS QUE ACTUALIZAN LOS PINTADOS--
+
+DROP TRIGGER IF EXISTS TR_pintar_coche;
+CREATE TRIGGER TR_pintar_coche
+AFTER UPDATE ON coches
+FOR EACH ROW
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (new.numBastidor, new.matricula, 'Coche', new.precio, new.color, new.numAsientos, new.codSerie, 'Pintada', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_pintar_camion;
+CREATE TRIGGER TR_pintar_camion
+AFTER UPDATE ON camiones
+FOR EACH ROW
+INSERT INTO registro (numBastidor, matricula, tipo, precio, color, numAsientos, codSerie, accion, usuario, fecha)
+VALUES (new.numBastidor, new.matricula, 'Camion', new.precio, new.color, new.numAsientos, new.codSerie, 'Pintada', current_user(), current_date());
+
+DROP TRIGGER IF EXISTS TR_update_vehiculo;
+CREATE TRIGGER TR_update_vehiculo
+AFTER UPDATE ON coches
+FOR EACH ROW
+UPDATE vehiculos
+set color = new.color
+where numBastidor = new.numBastidor;
+
+DROP TRIGGER IF EXISTS TR_update_vehiculo;
+CREATE TRIGGER TR_update_vehiculo
+AFTER UPDATE ON camiones
+FOR EACH ROW
+UPDATE vehiculos
+set color = new.color
+where numBastidor = new.numBastidor;
+
+
 
 
