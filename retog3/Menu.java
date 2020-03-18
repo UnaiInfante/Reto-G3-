@@ -27,6 +27,15 @@ public class Menu {
 	}
 	
 	public static void main(String[] args) {
+		int op=Console.readInt();
+		switch(op){
+		case(1):break;
+		case(2):break;
+		case(3):break;
+		
+		
+		}
+		
 
 		try {
 			
