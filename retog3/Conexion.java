@@ -22,7 +22,7 @@ import java.sql.SQLException;
 	 * la base de datos local que se use y el usuario no tendrá que interactuar con
 	 * este campo.
 	 */
-	private static String name = "retog3";
+	private static String name = "prueba";
 	
 	/**
 	 * La dirección URL donde se encuentra la base de datos. Esta base 
