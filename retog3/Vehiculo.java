@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-abstract class Vehiculo {
+  public final class Vehiculo {
 	
 	private String color;
 	private boolean isPainted;
@@ -21,19 +21,14 @@ abstract class Vehiculo {
 		}
 	}
 	
-	Vehiculo(String color, boolean isPainted, int numAsientos, float precio, String serie) {
-		this.color = color;
-		this.isPainted = isPainted;
-		this.numAsientos = numAsientos;
-		this.precio = precio;
-		this.serie = serie;
-	}	
+	private Vehiculo() {};
 	
-		public void comprarVehiculo(char tipo, Connection conexion) throws SQLException {
+	
+		public void comprarVehiculo(String tipo, Connection conexion) throws SQLException {
 		
 		System.out.println("Write data:");
 		System.out.println("MATRICULA:");
-		int Matricula = Console.readInt();
+		int matricula = Console.readInt();
 		System.out.println("NUMERO DE BASTIDOR:");
 		int numBastidor = Console.readInt();
 		System.out.println("COLOR DEL VEHICULO:");
@@ -46,18 +41,45 @@ abstract class Vehiculo {
 		int serie =Console.readInt();
 		
 		
-		String sql=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('" + Matricula + "', " + "'"+numBastidor + "',"+"'"+color+"', " + "'"+numAsientos + "', " + "'"+precio + "', " + "'"+serie + "');");
+		String sql=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('" + matricula + "', " + "'"+numBastidor + "',"+"'"+color+"', " + "'"+numAsientos + "', " + "'"+precio + "', " + "'"+serie + "');");
 		PreparedStatement ps = conexion.prepareStatement(sql);	
-		
+	
 		int status = ps.executeUpdate();	
-		if(status != 0) {
-			System.out.println("Datos insertados.");
-			}
+		if(tipo=="coche" ) {
+			System.out.println("NUMERO DE PUERTAS:");
+			int numpuertas=Console.readInt();
+			System.out.println("CAPACIDA DE MALETERO");
+			int capmaletero=Console.readInt();
+			String sql2=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('"+ numpuertas+ "',"+"'"+capmaletero+"') WHERE matricula='"+matricula+"';");
+			PreparedStatement ps2 = conexion.prepareStatement(sql2);	
+			
+			 status = ps2.executeUpdate();	
+			if(status != 0) {
+				System.out.println("Datos insertados.");
+							}
+			
+			}else
+				if(tipo=="camion") {
+					System.out.println("CARGA:");
+					String numPuertas=Console.readString();
+					System.out.println("TIPO DE MERCANCIA");
+					int tipMercancia=Console.readInt();
+					String sql3=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('"+numPuertas+ "',"+"'"+tipMercancia+"') WHERE matricula='"+matricula+"';");
+					PreparedStatement ps3 = conexion.prepareStatement(sql3);	
+					
+					 status = ps3.executeUpdate();	
+					if(status != 0) {
+						System.out.println("Datos insertados.");
+					}
+				}else {
+					System.out.println("Error valor no aceptado");
+				}
+		
 		}
 
     
 	
-	public void venderVehiculo(char tipo, Connection conexion) throws SQLException {
+	public void venderVehiculo(Connection conexion) throws SQLException {
 
 		System.out.println("Write some data:");
 		System.out.println("MATRICULA:");
@@ -70,7 +92,7 @@ abstract class Vehiculo {
 			System.out.println("Coche vendido.");
 		}
 	}
-	public void pintarVehiculo(char tipo, Connection conexion) throws SQLException {
+	public void pintarVehiculo(Connection conexion) throws SQLException {
 		System.out.println("Write data:");
 		System.out.println("MATRICULA:");
 		int matricula = Console.readInt();
