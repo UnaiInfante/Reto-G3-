@@ -1,6 +1,5 @@
 package retog3;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -21,14 +20,16 @@ import java.sql.SQLException;
 		}
 	}
 	
-	private Vehiculo() {};
+	
+	private Vehiculo() {}
 	
 	
-		public void comprarVehiculo(String tipo, Connection conexion) throws SQLException {
+		public static void comprarVehiculo(Connection conexion) throws SQLException {
 		
 		System.out.println("Write data:");
+		
 		System.out.println("MATRICULA:");
-		int matricula = Console.readInt();
+		String matricula = Console.readString();
 		System.out.println("NUMERO DE BASTIDOR:");
 		int numBastidor = Console.readInt();
 		System.out.println("COLOR DEL VEHICULO:");
@@ -36,50 +37,57 @@ import java.sql.SQLException;
 		System.out.println("NUMERO DE ASIENTOS:");
 		int numAsientos =Console.readInt();
 		System.out.println("PRECIO:");
-		int precio =Console.readInt();
+		float precio =Console.readFloat();
 		System.out.println("SERIE:");
-		int serie =Console.readInt();
+		String serie =Console.readString();
+		System.out.println("TIPO:");
+		String tipo = Console.readString();
 		
 		
 		String sql=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('" + matricula + "', " + "'"+numBastidor + "',"+"'"+color+"', " + "'"+numAsientos + "', " + "'"+precio + "', " + "'"+serie + "');");
-		PreparedStatement ps = conexion.prepareStatement(sql);	
+		System.out.println(sql);
+		//PreparedStatement ps = conexion.prepareStatement(sql);	
 	
-		int status = ps.executeUpdate();	
-		if(tipo=="coche" ) {
+		//int status = ps.executeUpdate();	
+		if(tipo.equalsIgnoreCase("Coche")) {
 			System.out.println("NUMERO DE PUERTAS:");
 			int numpuertas=Console.readInt();
 			System.out.println("CAPACIDA DE MALETERO");
 			int capmaletero=Console.readInt();
 			String sql2=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('"+ numpuertas+ "',"+"'"+capmaletero+"') WHERE matricula='"+matricula+"';");
-			PreparedStatement ps2 = conexion.prepareStatement(sql2);	
+			System.out.println(sql2);
+			//PreparedStatement ps2 = conexion.prepareStatement(sql2);	
 			
-			 status = ps2.executeUpdate();	
+			/*
+			status = ps2.executeUpdate();	
 			if(status != 0) {
 				System.out.println("Datos insertados.");
-							}
-			
+			}
+			*/
 			}else
 				if(tipo=="camion") {
 					System.out.println("CARGA:");
 					String numPuertas=Console.readString();
 					System.out.println("TIPO DE MERCANCIA");
 					int tipMercancia=Console.readInt();
-					String sql3=("INSERT INTO retog3.vehiculo (VALORES) VALUES " + " ('"+numPuertas+ "',"+"'"+tipMercancia+"') WHERE matricula='"+matricula+"';");
-					PreparedStatement ps3 = conexion.prepareStatement(sql3);	
-					
-					 status = ps3.executeUpdate();	
+					String sql3=("INSERT INTO retog3.vehiculo (VALORES) VALUES ("  + numPuertas + ", '"+tipMercancia+"') WHERE matricula='"+matricula+"';");
+					//PreparedStatement ps3 = conexion.prepareStatement(sql3);	
+					System.out.println(sql3);
+					/*
+					status = ps3.executeUpdate();	
 					if(status != 0) {
 						System.out.println("Datos insertados.");
 					}
+					*/
 				}else {
-					System.out.println("Error valor no aceptado");
+					System.err.println("Valor inválido.");
 				}
 		
 		}
 
     
 	
-	public void venderVehiculo(Connection conexion) throws SQLException {
+		public static void venderVehiculo(Connection conexion) throws SQLException {
 
 		System.out.println("Write some data:");
 		System.out.println("MATRICULA:");
@@ -92,14 +100,14 @@ import java.sql.SQLException;
 			System.out.println("Coche vendido.");
 		}
 	}
-	public void pintarVehiculo(Connection conexion) throws SQLException {
+		public static void pintarVehiculo(Connection conexion) throws SQLException {
 		System.out.println("Write data:");
 		System.out.println("MATRICULA:");
 		int matricula = Console.readInt();
 		System.out.println("COLOR:");
 		String color =Console.readString();
 		
-		String sql=("UPDATE vehiculo SET color = '" + color + "', esPintado = " + (isPainted = true)+" WHERE matricula ='"+ matricula +"';");
+		String sql=("UPDATE vehiculo SET color = '" + color + "', esPintado = " + (true)+" WHERE matricula ='"+ matricula +"';");
 		
 		PreparedStatement ps = conexion.prepareStatement(sql) ;	
 		int status = ps.executeUpdate();	
@@ -108,7 +116,7 @@ import java.sql.SQLException;
 		}
 	}
 
-	public void display(char tipo, Connection conexion) throws SQLException {
+		public static void display(Connection conexion) throws SQLException {
 		
 		String sql=("SELECT * FROM retog3.vehiculo ");
 		PreparedStatement ps = conexion.prepareStatement(sql) ;	
