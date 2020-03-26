@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,14 +46,11 @@ public final class XML {
 	 */
 	private static String string;
 	
-	/*
-	 * Prueba: Serán eliminados más tarde
+	/**
+	 * Es la ruta del archivo <b>.xml</b> que se quiere importar. Está creado para funcionar
+	 * de forma manual o ir al escritorio del usuario.
 	 */
-	private static String studentName;
-	private static int studentAg;
-	private static Integer studentId;
-	
-	private static String path = System.getProperty("user.home") + "/Desktop/registro.xml";
+	private static String path;
 	
 	/** Evitamos instanciar la clase con el constructor en {@code private}. */
 	private XML() {}
@@ -60,7 +58,8 @@ public final class XML {
 	/**
 	 * Importa un registro XML a un archivo a un lugar específico. Este proceso
 	 * es automático: Crea un archivo con el registro o lo sobreescribe si ya existe
-	 * uno.
+	 * uno. El usuario puede elegir entre escribir la ruta del archivo o suponer que está 
+	 * en el escritorio, facilitando el acceso al registro.
 	 * 
 	 * @param rs La instrucción SQL que tomará de referencia
 	 * @param conexion La conexión de la base de datos.
@@ -71,7 +70,6 @@ public final class XML {
 	 * @throws InstantiationException -
 	 * @throws IllegalAccessException -
 	 * @throws IOException -
-	 * @throws ClassNotFoundException -
 	 */
 	public static void exportarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
 		
@@ -82,20 +80,27 @@ public final class XML {
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document doc = builder.newDocument();
 	    
-	    Element results = doc.createElement("Results");
+	    Element results = doc.createElement("Database");
 	    doc.appendChild(results);
 	  	ResultSetMetaData rsmd = rs.getMetaData();
 		   int colCount = rsmd.getColumnCount();
-
 		   while (rs.next()) {
-		      Element row = doc.createElement("Row");
+		      Element row = doc.createElement("vehiculo");
 		      results.appendChild(row);
 		      for (int i = 1; i <= colCount; i++) {
-		        String columnName = rsmd.getColumnName(i);
-		        Object value = rs.getObject(i);
-		        Element node = doc.createElement(columnName);
-		        node.appendChild(doc.createTextNode(value.toString()));
-		        row.appendChild(node);
+		    	  String columnName = rsmd.getColumnName(i);
+		    	  Object value = rs.getObject(i);
+			      System.out.println("object");
+		       if(rsmd.getColumnName(i) != "tipo") {
+		    	   System.out.println("Check");
+		    	   Element node = doc.createElement(columnName);
+			       node.appendChild(doc.createTextNode(value.toString()));
+			       row.appendChild(node);
+			       
+		       } else {
+		    	   System.out.println("attribute");
+		    	   row.setNodeValue("type=\"" + value.toString() + "\"");
+		       }
 		      }
 		    }
 		   
@@ -116,7 +121,7 @@ public final class XML {
 		    bw.close();
 		    rs.close();
 		    conexion.close();
-		    System.out.println("Registro importado.");
+		    System.out.println("Registro exportado.");
 	} 
 	
 	/**
@@ -125,22 +130,41 @@ public final class XML {
 	 * el método main. Para insertar los datos necesita ayuda del método {@code insertData} de 
 	 * tipo {@code private void} para simplificar el proceso.
 	 * 
-	 * @param conexion La conexión a donde enviará los datos.
+	 * @param conexion
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
-	 * @throws SQLException 
-	 * @throws DOMException 
+	 * @throws DOMException
+	 * @throws SQLException
 	 */
 	public static void importarRegistro(Connection conexion) throws ParserConfigurationException, SAXException, IOException, DOMException, SQLException {
 		
-		System.out.println("Escribe la dirección del archivo:");
-		path = "C:\\Users\\usuario\\Desktop\\registro.xml";
+		int opcion;
+		do {
+			System.out.println("Elija el módo de ruta:\n1) Escribir la ruta manualmente.\n2) Empezar desde el escritorio.");
+			opcion = Console.readInt();
+			if(opcion == 1) {
+				System.out.println("Escriba la ruta: ");
+				path = Console.readString();
+			} else if (opcion == 2) {
+				path = System.getProperty("user.home") + "/Desktop/";
+				System.out.println("Escriba el nombre del archivo con la extensión \".xml\"");
+				path+= Console.readString();
+			} else {
+				System.err.println("ERROR: Valor inválido. Inténtelo de nuevo.");
+			}
+		} while(opcion < 1 || opcion > 2);
+		
+		/*
+		 * Proceso estándar para crear un objeto que representa un 
+		 * documento.
+		 */
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document doc = builder.parse(path);
-		NodeList list = doc.getElementsByTagName("Row");
 		
+		NodeList list = doc.getElementsByTagName("vehiculo");
+		System.out.println("Importando...\n");
 		for(int i = 0; i < list.getLength(); i++) {
 			
 			//Esta es la lista de donde se sacarán los datos. Representan una tupla de la tabla.
@@ -148,55 +172,74 @@ public final class XML {
 			
 			if(node.getNodeType() == Node.ELEMENT_NODE) {
 				
-				//Creating the first nodes
-				Element student = (Element) node;
-				NodeList studentList = student.getChildNodes();
-				System.out.println("----------------------");
-				System.out.println("\nStudent: " + (i + 1)+ "\n");
-				for(int j = 0; j < studentList.getLength(); j++) {
+				String matricula;
+				int numBastidor;
+				String serie;
+				int esPintado;
+				String color;
+				int numAsientos;
+				float precio;
+				
+				//Creando los nodos "vehiculo"
+				Element vehicle = (Element) node;
+				String tipo = vehicle.getAttribute("type");
+				NodeList vList = vehicle.getChildNodes();
+				
+				
+				ArrayList<String> dataVehiculo = new ArrayList<String>();
+				for(int j = 0; j < vList.getLength(); j++) {
 					
-					//Creating the second nodes
-					Node node2 = studentList.item(j);
+					//Creando los nodos que contienen los datos.
+					Node node2 = vList.item(j);
 					if(node2.getNodeType() == Node.ELEMENT_NODE) {
-						Element studentAtt = (Element) node2;
-						insertData(j, studentAtt, conexion);
-					}
+						Element vAtt = (Element) node2;
+						
+						String data = vAtt.getTextContent();
+						dataVehiculo.add(data);
+						
+					}	
 				}
+				matricula = (String) dataVehiculo.get(0);
+				numBastidor = Integer.parseInt(dataVehiculo.get(1));
+				serie = dataVehiculo.get(2);
+				esPintado = Integer.parseInt(dataVehiculo.get(3)) ;
+				color = dataVehiculo.get(4);
+				numAsientos = Integer.parseInt(dataVehiculo.get(5));
+				precio = Float.parseFloat(dataVehiculo.get(6)) ;
+				
+				String insert;
+				
+				if(tipo.equalsIgnoreCase("COCHE")) {
+					
+					int numPuertas = Integer.parseInt(dataVehiculo.get(7));
+					int capMaletero = Integer.parseInt(dataVehiculo.get(8));
+					
+					insert = "INSERT INTO coche (matricula, numPuertas, capMaletero) VALUES ('" + matricula + "', " 
+					+ numPuertas + ", " + capMaletero + ");";
+					PreparedStatement ps2 = conexion.prepareStatement(insert);
+					ps2.executeUpdate();
+					
+				} else if (tipo.equalsIgnoreCase("CAMION")) {
+					
+					String carga = (String) dataVehiculo.get(7);
+					char tipoMercancia = dataVehiculo.get(8).charAt(0);
+					
+					insert = "INSERT INTO camion (matricula, carga, tipoMercancia) VALUES ('" + matricula + "', '" + carga + "', '" + 
+					tipoMercancia + "');";
+					PreparedStatement ps2 = conexion.prepareStatement(insert);
+					ps2.executeUpdate();
+				}
+				
+				String sql = "INSERT INTO vehiculo (matricula, numBastidor, serie, color, esPintado, numAsientos, precio, tipo) " + 
+				"VALUES ('" + matricula + "', " + numBastidor + ", '" + serie + "', '" + color + "', "  + esPintado + ", " + numAsientos + 
+				", " + precio + ", '" + tipo + "');";
+				
+				PreparedStatement ps = conexion.prepareStatement(sql);
+				ps.executeUpdate();
 			}
 		}
-		System.out.println("-------------------\n");
 		System.out.println("Datos exportados a la base de datos.");
 		conexion.close();
 	}
-	
-	/**
-	 * Método auxiliar que inserta los datos del archivo XML en forma de
-	 * {@code Element} y se ejecutan las instrucciones con objetos de tipo
-	 * {@code PreparedStatement.}
-	 * 
-	 * @param j La iteración en la que se inserta los datos
-	 * @param studentAtt los datos del archivo XML
-	 * @param conexion la conexión donde se enviarán los datos.
-	 * @throws SQLException
-	 */
-	private static void insertData(int j, Element studentAtt, Connection conexion) throws SQLException {
-		if(j == 0) {
-			studentId = Integer.parseInt(studentAtt.getTextContent()); 
-			String statement = "INSERT INTO student (studentId)"
-					+ " VALUES (" + studentId.intValue() + ");";
 
-			PreparedStatement ps = conexion.prepareStatement(statement);
-			ps.executeUpdate();
-			
-		} else {
-
-			String statement = "UPDATE student" 
-					+ " SET " + studentAtt.getTagName() + "=" + "'" + studentAtt.getTextContent()  + "'"
-					+ " WHERE " + "studentId" + " = " + studentId.intValue() + ";";
-			
-			PreparedStatement ps = conexion.prepareStatement(statement);
-			ps.executeUpdate();
-			
-		}
-	}
 }

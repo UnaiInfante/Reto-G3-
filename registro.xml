@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<database>
+	<vehiculo type="coche">
+		<matricula>E123456789A</matricula>
+		<numBastidor>1234</numBastidor>
+		<serie>1F1999</serie>
+		<esPintado>0</esPintado>
+		<color>Azul</color>
+		<numAsientos>4</numAsientos>
+		<precio>12521.1</precio>
+		<numPuertas>5</numPuertas>
+		<capMaletero>15</capMaletero>
+	</vehiculo>
+	<vehiculo type="camion">
+		<matricula>A1946175821G</matricula>
+		<numBastidor>9141</numBastidor>
+		<serie>2C2004</serie>
+		<esPintado>1</esPintado>
+		<color>Naranja</color>
+		<numAsientos>2</numAsientos>
+		<precio>1045278</precio>
+		<carga>Explosivos</carga>
+		<tipoMercancia>P</tipoMercancia>
+	</vehiculo>
+	<vehiculo type="coche">
+		<matricula>G916471313T</matricula>
+		<numBastidor>6146</numBastidor>
+		<serie>9W2008</serie>
+		<esPintado>0</esPintado>
+		<color>Verde</color>
+		<numAsientos>4</numAsientos>
+		<precio>233123</precio>
+		<numPuertas>4</numPuertas>
+		<capMaletero>6</capMaletero>
+	</vehiculo>
+		<vehiculo type="camion">
+		<matricula>F916420134L</matricula>
+		<numBastidor>1942</numBastidor>
+		<serie>3F2010</serie>
+		<esPintado>0</esPintado>
+		<color>Blanco</color>
+		<numAsientos>3</numAsientos>
+		<precio>13571</precio>
+		<carga>Comida</carga>
+		<tipoMercancia>G</tipoMercancia>
+	</vehiculo>
+</database>
