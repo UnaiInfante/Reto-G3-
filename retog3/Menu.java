@@ -27,19 +27,35 @@ public class Menu {
 	}
 	
 	public static void main(String[] args) {
+		try {
+		Connection conexion = Conexion.conectarBase();
+		
 		int op=Console.readInt();
 		switch(op){
-		case(1):break;
-		case(2):break;
-		case(3):break;
-		
-		
+		case(1):{ 
+			Vehiculo.mostrar(conexion);
+			break;
 		}
 		
+		case(2):{
+			Vehiculo.comprarVehiculo(conexion);
+			break;
+		}
+		case(3):{
+			Vehiculo.venderVehiculo(conexion);
+			break;
+		}
+		case(4):{
+			Vehiculo.pintarVehiculo(conexion);
+			break;
+		}
+		
+		}while(op!=5)
+		
 
-		try {
+	
 			
-			Connection conexion = Conexion.conectarBase();
+		
 
 			/*
 			Statement sentencia = conexion.createStatement();

@@ -116,7 +116,7 @@ import java.sql.SQLException;
 		}
 	}
 
-		public static void display(Connection conexion) throws SQLException {
+		public static void mostrar(Connection conexion) throws SQLException {
 		
 		String sql=("SELECT * FROM retog3.vehiculo ");
 		PreparedStatement ps = conexion.prepareStatement(sql) ;	
