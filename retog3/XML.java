@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,13 +28,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import test.Console;
+
 import org.w3c.dom.Node;
 
 /**
  * Esta clase se encarga de importar y exportar los datos de la base MySQL
- * en formato XML. dado que no tiene constancia sobre qué se inserta (solo la
- * instrucción que le llega), los archivos que maneje tienen un formato general
- * y puede desde el registro completo hasta un historial de la base de datos.
+ * en formato XML. No necesita recibir instrucciones en forma de argumentos, y no 
+ * tiene que ser instanciada.
  * 
  * @author G3
  *@version 1.0
@@ -61,7 +64,6 @@ public final class XML {
 	 * uno. El usuario puede elegir entre escribir la ruta del archivo o suponer que está 
 	 * en el escritorio, facilitando el acceso al registro.
 	 * 
-	 * @param rs La instrucción SQL que tomará de referencia
 	 * @param conexion La conexión de la base de datos.
 	 * 
 	 * @throws SQLException -
@@ -71,45 +73,93 @@ public final class XML {
 	 * @throws IllegalAccessException -
 	 * @throws IOException -
 	 */
-	public static void exportarRegistro(ResultSet rs, Connection conexion) throws SQLException, ParserConfigurationException, TransformerException, InstantiationException, IllegalAccessException, IOException {
+	public static void exportarRegistro(Connection conexion) throws IOException, ParserConfigurationException, SQLException, TransformerException {
 		
-		File file = new File(path);
+		/*
+		 * Aspectos generales: Se crean los objetos File y Document que servirán para la 
+		 * exportación del registro.
+		 */
+		File file = new File(System.getProperty("user.home") + "/Desktop/registro.xml");
 		FileWriter fw = new FileWriter(file);
 		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	    DocumentBuilder builder = factory.newDocumentBuilder();
 	    Document doc = builder.newDocument();
 	    
+	    /*
+	     * El documento separará coches y camiones, poniendo coches primero.
+	     */
+	    Statement st = conexion.createStatement();
+		ResultSet rs = st.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+				+ "numPuertas, capMaletero FROM VEHICULO, COCHE WHERE vehiculo.matricula = coche.matricula;");
+		
 	    Element results = doc.createElement("Database");
 	    doc.appendChild(results);
 	  	ResultSetMetaData rsmd = rs.getMetaData();
-		   int colCount = rsmd.getColumnCount();
-		   while (rs.next()) {
-		      Element row = doc.createElement("vehiculo");
-		      results.appendChild(row);
-		      for (int i = 1; i <= colCount; i++) {
-		    	  String columnName = rsmd.getColumnName(i);
-		    	  Object value = rs.getObject(i);
-			      System.out.println("object");
-		       if(rsmd.getColumnName(i) != "tipo") {
-		    	   System.out.println("Check");
-		    	   Element node = doc.createElement(columnName);
-			       node.appendChild(doc.createTextNode(value.toString()));
-			       row.appendChild(node);
-			       
-		       } else {
-		    	   System.out.println("attribute");
-		    	   row.setNodeValue("type=\"" + value.toString() + "\"");
-		       }
-		      }
+		int colCount = rsmd.getColumnCount();
+		
+		while (rs.next()) {
+			
+			Element row = doc.createElement("vehiculo");
+		    results.appendChild(row);
+		    for (int i = 1; i <= colCount; i++) {
+		    	
+		    	String columnName = rsmd.getColumnName(i);
+			    Object value = rs.getObject(i);
+			    if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
+			    	
+			    	row.setAttribute("type", value.toString());
+				    
+				} else {
+					
+					Element node = doc.createElement(columnName);
+				    node.appendChild(doc.createTextNode(value.toString()));
+				    row.appendChild(node);
+					
+				}
+			    
 		    }
+		}
+		
+		/*
+		 * Sección de camiones.
+		 */
+		Statement st2 = conexion.createStatement();
+		ResultSet rs2 = st2.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+				+ "carga, tipoMercancia FROM VEHICULO, CAMION WHERE vehiculo.matricula = camion.matricula");
+		
+		while (rs2.next()) {
+			
+				Element row = doc.createElement("vehiculo");
+				results.appendChild(row);
+				ResultSetMetaData rsmd2 = rs2.getMetaData();
+				int colCount2 = rsmd2.getColumnCount();
+				
+				for (int i = 1; i <= colCount2; i++) {
+					
+					String columnName = rsmd2.getColumnName(i);
+					Object value = rs2.getObject(i);
+					if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
+						
+						row.setAttribute("type", value.toString());
+						
+					} else {
+						
+						Element node = doc.createElement(columnName);
+						node.appendChild(doc.createTextNode(value.toString()));
+						row.appendChild(node);
+						
+					}
+					
+				}	
+			}
 		   
 		    DOMSource domSource = new DOMSource(doc);
 		    TransformerFactory tf = TransformerFactory.newInstance();
 		    Transformer transformer = tf.newTransformer();
 		    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-		    transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+		    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 		    StringWriter sw = new StringWriter();
 		    StreamResult sr = new StreamResult(sw);
 		    transformer.transform(domSource, sr);
@@ -130,26 +180,26 @@ public final class XML {
 	 * el método main. Para insertar los datos necesita ayuda del método {@code insertData} de 
 	 * tipo {@code private void} para simplificar el proceso.
 	 * 
-	 * @param conexion
+	 * @param conexion - El objeto de tipo {@code Connection} para conectarse con la base de datos local.
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws DOMException
 	 * @throws SQLException
 	 */
-	public static void importarRegistro(Connection conexion) throws ParserConfigurationException, SAXException, IOException, DOMException, SQLException {
+	public static void importarRegistro(Connection conexion) throws ParserConfigurationException, SAXException, IOException, SQLException  {
 		
 		int opcion;
 		do {
-			System.out.println("Elija el módo de ruta:\n1) Escribir la ruta manualmente.\n2) Empezar desde el escritorio.");
+			System.out.println("Elija el modo de ruta:\n1) Escribir la ruta manualmente.\n2) Empezar desde el escritorio.");
 			opcion = Console.readInt();
 			if(opcion == 1) {
 				System.out.println("Escriba la ruta: ");
 				path = Console.readString();
 			} else if (opcion == 2) {
 				path = System.getProperty("user.home") + "/Desktop/";
-				System.out.println("Escriba el nombre del archivo con la extensión \".xml\"");
-				path+= Console.readString();
+				System.out.println("Escriba el nombre del archivo: ");
+				path+= Console.readString() + ".xml";
 			} else {
 				System.err.println("ERROR: Valor inválido. Inténtelo de nuevo.");
 			}
@@ -221,7 +271,7 @@ public final class XML {
 					
 				} else if (tipo.equalsIgnoreCase("CAMION")) {
 					
-					String carga = (String) dataVehiculo.get(7);
+					String carga = dataVehiculo.get(7);
 					char tipoMercancia = dataVehiculo.get(8).charAt(0);
 					
 					insert = "INSERT INTO camion (matricula, carga, tipoMercancia) VALUES ('" + matricula + "', '" + carga + "', '" + 
