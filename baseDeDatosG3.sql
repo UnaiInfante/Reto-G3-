@@ -2,13 +2,6 @@ DROP DATABASE IF EXISTS retog3;
 CREATE DATABASE retog3;
 USE retog3;
 
-CREATE TABLE SERIE (
-serie varchar(10) not null,
-fechaFabr date not null default '00-00-0000',
-marca varchar(20) not null default '0',
-modelo varchar(20) not null default '0',
-PRIMARY KEY (serie));
-
 CREATE TABLE VEHICULO (
 matricula varchar(15) not null,
 numBastidor int null default '0',

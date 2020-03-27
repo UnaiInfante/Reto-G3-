@@ -36,7 +36,8 @@ public final class Menu {
 		"|3. Vender un vehículo   |\n" + 
 		"|4. Pintar un vehículo   |\n" + 
 		"|5. Exportar registro    |\n" + 
-		"|6. Salir                |\n" + 
+		"|6. Exportar registro    |\n" + 
+		"|7. Salir                |\n" + 
 		"+------------------------+\n";
 		
 		System.out.println(menu);
@@ -100,10 +101,8 @@ public final class Menu {
 				break;
 				
 			case(5):
-				System.out.println("Exportando registro...");
 			    XML.exportarRegistro(conexion);
-				break;
-				
+				break;		    
 			case(6):
 				System.out.println("Saliendo del menú...");	
 			    break;
@@ -141,4 +140,6 @@ public final class Menu {
 		}
 		return true;
 	}
+	
+	
 }

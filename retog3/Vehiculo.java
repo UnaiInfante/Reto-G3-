@@ -43,6 +43,21 @@ public final class Vehiculo {
 	
 	/**Atributo de la tabla en la base de datos.*/
 	private static String serie;
+	
+	/**Atributo de la tabla en la base de datos.*/
+	private static String tipo;
+	
+	/**Atributo de la tabla para los coches en la base de datos.*/
+	private static int numPuertas;
+	
+	/**Atributo de la tabla para los coches en la base de datos.*/
+	private static int capMaletero;
+	
+	/**Atributo de la tabla para los camiones en la base de datos.*/
+	private static String carga;
+	
+	/**Atributo de la tabla para los camiones en la base de datos.*/
+	private static char tipoMercancia;
 		
 	/** Con el constructor en {@code private} evitamos instanciar la clase.*/
 	private Vehiculo() {}
@@ -95,7 +110,7 @@ public final class Vehiculo {
 			serie =Console.readString();
 				
 			System.out.println("TIPO:");
-			String tipo = Console.readString();	
+			tipo = Console.readString();	
 					
 			String sql="INSERT INTO retog3.vehiculo (matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo) "
 					+ "VALUES ('" + matricula + "', " + numBastidor + ", '" + serie + "', " + numAsientos + ", '" + color + "', " + numAsientos + ", " + 
@@ -106,22 +121,27 @@ public final class Vehiculo {
 			if (tipo.equalsIgnoreCase("COCHE")) {
 						
 				System.out.println("NUMERO DE PUERTAS:");
-				int numPuertas = Console.readInt();
+				numPuertas = Console.readInt();
+				
 				System.out.println("CAPACIDA DE MALETERO");
-				int capMaletero = Console.readInt();
+				capMaletero = Console.readInt();
 				
 				String sql2=("INSERT INTO COCHE (matricula, numPuertas, capMaletero) VALUES ('" + matricula + "', " + numPuertas + ", " + capMaletero + ");");
 				PreparedStatement ps2 = conexion.prepareStatement(sql2);	
-				ps2.executeUpdate();
+				
+				
+				if (ps2.executeUpdate() != 0) {
+					System.out.println("Coche comprado.");
+					resumen();
+				}
 						
 			} else if (tipo.equalsIgnoreCase("CAMION")) {
 				
 				System.out.println("CARGA:");
-				String carga=Console.readString();
+				 carga = Console.readString();
 				
-				System.out.println("TIPO DE MERCANCIA (G: General.\nP: Peligrosa.\nA: Árido.");
+				System.out.println("TIPO DE MERCANCIA (G: General.\nP: Peligrosa.\nA: Árido.");				
 				
-				char tipoMercancia;
 				do {
 					
 					tipoMercancia = Console.readChar();
@@ -133,7 +153,11 @@ public final class Vehiculo {
 				
 				String sql3=("INSERT INTO retog3.camion (matricula, carga, tipoMercancia) VALUES ('" + matricula + "', "  + carga + ", '" + tipoMercancia + "');");
 				PreparedStatement ps3 = conexion.prepareStatement(sql3);	
-				ps3.executeUpdate();
+				
+				if(ps3.executeUpdate() != 0) {
+					System.out.println("Camión comprado.");
+					resumen();
+				}
 				
 			} else {
 					
@@ -151,7 +175,7 @@ public final class Vehiculo {
 	 * Este método elimina un vehiculo de la base de datos dada su clave primaria
 	 * (Su matrícula).
 	 * 
-	 * @param conexion
+	 * @param conexion - La conexión de la base de datos.
 	 * @throws SQLException
 	 * @throws NumberFormatException
 	 */
@@ -197,9 +221,10 @@ public final class Vehiculo {
 			ps.executeUpdate();
 			
 			PreparedStatement ps2 = conexion.prepareStatement(tabla);
-			ps2.executeUpdate();
-			
-			System.out.println("Coche vendido.");
+			if(ps2.executeUpdate() != 0) {
+				System.out.println("Vehículo vendido.");
+				resumen();
+			}
 		} else if (opcion == 2) {
 			System.out.println("Cancelando operación...");
 		}
@@ -209,7 +234,7 @@ public final class Vehiculo {
 	 * Modifica el vehículo para tener un diferente pintado. Cambiará el atributo {@code esPintado}
 	 * para dejar en constancia que se ha hecho la modificación.
 	 * 
-	 * @param conexion
+	 * @param conexion La conexión de la base de datos
 	 * @throws SQLException
 	 */
 	public static void pintarVehiculo(Connection conexion) throws SQLException {
@@ -237,40 +262,105 @@ public final class Vehiculo {
 			System.out.println(sql);
 			PreparedStatement ps = conexion.prepareStatement(sql) ;	
 			ps.executeUpdate();	
+		
 		} else {
 			System.out.println("Cancelando operación...");
 		}
 	}
 	
 	/**
-	 * Recoge todos los vehículos de la base de datos y los muestra en la consola.
+	 * Método que muestra el stock de vehículos de forma individual o agrupados
+	 * por número de serie.
 	 * 
-	 * @param conexion
+	 * @param conexion La conexión de la base de datos.
+	 * @return {@code true} si la operación fue exitosa y {@code false} si la operación fue cancelada.
 	 * @throws SQLException
 	 */
-	public static void mostrar(Connection conexion) throws SQLException {
+	public static boolean mostrar(Connection conexion) throws SQLException {
 		
-		String sql= "SELECT * FROM vehiculo";
-		Statement select = conexion.createStatement();
-		ResultSet rs = select.executeQuery(sql);
-		ResultSetMetaData rsmd = rs.getMetaData();
-		int colCount = rsmd.getColumnCount();
-				
-		System.out.println("\n-----------------STOCK ACTUAL---------------------\n");
-
-		while(rs.next()) {
-				
-			for(int i = 1; i <= colCount; i++) {
-						
-				String columnName = rsmd.getColumnName(i);
-				Object value = rs.getObject(i);
-				String val = value.toString();
-				System.out.println(columnName + ": " + val + "\t");
-				
-			}
+		String local = "\n" + System.getProperty("user.name") + "\\menú\\stock>";
+		System.out.println("Seleccione un tipo de consulta:\n1)Agrupar por series.\n2)Mostrar todos los datos.\n3)Cancelar operación.");
+		int op;
+		
+		do {
+			System.out.print(local);
+			op = Console.readInt();
+			if (op < 1 || op > 3) System.err.println("Valor incorrecto.");
 			
-			System.out.println("\n---------------------");
+		} while (op < 1 || op > 3);
+		
+		String sql = null;
+		
+		if(op == 1) {
+			sql ="SELECT serie FROM vehiculo;";
+			Statement select = conexion.createStatement();
+			ResultSet rs = select.executeQuery(sql);
+			rs.next();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int colCount = rsmd.getColumnCount();
+			
+			while(rs.next()) {
+				
+				for(int i = 1; i <= colCount; i++) {
 					
+					Object value = rs.getObject(1);
+					System.out.println(value);
+					serie = value.toString();
+					String valor = "SERIE: " + serie 
+					+ "\nMarca: " + serie.charAt(0) 
+					+ "\nModelo:" + serie.charAt(1) 
+					+ "\nAño de fabricación: " + (serie.charAt(2)) + (serie.charAt(3)) + (serie.charAt(4)) + (serie.charAt(5));
+					System.out.println(valor);
+					System.out.println("-----------------");
+					
+				}
+			}
+		
+		} else if (op == 2) {
+			sql= "SELECT * FROM vehiculo";
+			Statement select = conexion.createStatement();
+			ResultSet rs = select.executeQuery(sql);
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int colCount = rsmd.getColumnCount();
+					
+			System.out.println("\n-----------------STOCK ACTUAL---------------------\n");
+
+			while(rs.next()) {
+					
+				for(int i = 1; i <= colCount; i++) {
+							
+					String columnName = rsmd.getColumnName(i);
+					Object value = rs.getObject(i);
+					String val = value.toString();
+					System.out.println(columnName + ": " + val + "\t");
+					
+				}
+			}
+				
+				System.out.println("\n---------------------");
+		} else {
+			System.out.println("Cancelar operación.");
+			return false;
 		}
+		return true;
+	}
+	
+	/**
+	 * Muestra los datos de un vehículo. Es llamado cada vez que se hace cualquier
+	 * operación (INSERT-UPDATE-DELETE).
+	 * 
+	 * @return string Un String con los datos del vehículo.
+	 */
+	public static String resumen() {
+		String string = "\nMatrícula: " + matricula + "\nNo. Bastidor: " + numBastidor + "\nSerie: " + serie 
+				+ "\nColor: " + color + "\nNo. Asientos: " + numAsientos + "\nPrecio: " + precio;
+		
+		if(tipo.equalsIgnoreCase("coche")) {
+			string+= "\nNo. Puertas: " + numPuertas + "\nCapacidad del maletero: " + capMaletero;
+		} else if (tipo.equalsIgnoreCase("camion")) {
+			string+= "\nCarga: " + carga + "\nTipo de mercancía: " + tipoMercancia;
+		}
+		
+		return string;
 	}
 }
