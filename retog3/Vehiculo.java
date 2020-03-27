@@ -12,8 +12,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import test.Console;
-
 /**
  * Esta clase tiene los métodos para introducir vehículos de forma manual 
  * a la base de datos, así como su eliminación (ventas) y modificación (pintados). 

@@ -29,8 +29,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import test.Console;
-
 import org.w3c.dom.Node;
 
 /**
@@ -76,14 +74,11 @@ public final class XML {
 	 */
 	public static void exportarRegistro(Connection conexion) throws IOException, ParserConfigurationException, SQLException, TransformerException {
 		
-		/*
-		 * Aspectos generales: Se crean los objetos File y Document que servirán para la 
-		 * exportación del registro.
-		 */
+		//Aspectos generales: Se crean los objetos File y Document que servirán para la exportación del registro.
 		String local = "\n" + System.getProperty("user.name") + "\\menú\\XML>";
-		String tabla1 = "", tabla2 = "";
 		System.out.println("Seleccione el tipo de registro.\n1)Registro de la base de datos.\n2)Historial.\n3)Cancelar operación");
 		int opcion;
+		String nombre = null;
 		
 		do {
 			
@@ -94,29 +89,33 @@ public final class XML {
 			
 		}while (opcion < 1 || opcion > 3);
 		
-		if(opcion == 1) {
-			tabla1 = "retog3.VEHICULO, retog3.COCHE";
-			tabla2 = "retog3.VEHICULO, retog3.CAMION";
-		} else if (opcion == 2) {
-			tabla1 = "retog3.VEHICULO_R, retog3.COCHE_R";
-			tabla2 = "retog3.VEHICULO_R, retog3.CAMION_R";
-		} 
-		
 		if(opcion != 3) {
-			File file = new File(System.getProperty("user.home") + "/Desktop/registro.xml");
+			
+			
+			if(opcion == 1) {
+				nombre = "registro";
+			} else {
+				nombre = "historial";
+			}
+			File file = new File(System.getProperty("user.home") + "/Desktop/" + nombre + ".xml");
 			FileWriter fw = new FileWriter(file);
 			
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		    DocumentBuilder builder = factory.newDocumentBuilder();
 		    Document doc = builder.newDocument();
 		    
-		    /*
-		     * El documento separará coches y camiones, poniendo coches primero.
-		     */
+		    
+		    //El documento separará coches y camiones, poniendo coches primero.
 		    Statement st = conexion.createStatement();
 		    
-			ResultSet rs = st.executeQuery("SELECT matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
-					+ "numPuertas, capMaletero FROM " + tabla1 + " WHERE vehiculo.matricula = coche.matricula;");
+		    ResultSet rs = null;
+		    if(opcion == 1) {
+				rs = st.executeQuery("SELECT v.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+						+ "numPuertas, capMaletero FROM VEHICULO v, COCHE c WHERE v.matricula = c.matricula;");
+		    } else {
+				rs = st.executeQuery("SELECT v.matricula, numBastidor, serie, color, numAsientos, precio, tipo, accion, "
+						+ "numPuertas, capMaletero FROM VEHICULO_R v, COCHE_R c WHERE v.matricula = c.matricula;");
+		    }
 			
 		    Element results = doc.createElement("Database");
 		    doc.appendChild(results);
@@ -150,8 +149,14 @@ public final class XML {
 			 * Sección de camiones.
 			 */
 			Statement st2 = conexion.createStatement();
-			ResultSet rs2 = st2.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
-					+ "carga, tipoMercancia FROM " + tabla2 + " WHERE vehiculo.matricula = camion.matricula");
+			ResultSet rs2 = null;
+			if(opcion == 1) {
+				rs2 = st2.executeQuery("SELECT v.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+						+ "carga, tipoMercancia FROM VEHICULO v, CAMION c WHERE v.matricula = c.matricula");
+			} else {
+				rs2 = st2.executeQuery("SELECT v.matricula, numBastidor, serie, color, numAsientos, precio, tipo, accion, "
+						+ "carga, tipoMercancia FROM VEHICULO_R v, CAMION_R c WHERE v.matricula = c.matricula");
+			}
 			
 			while (rs2.next()) {
 				
@@ -291,7 +296,7 @@ public final class XML {
 					int numPuertas = Integer.parseInt(dataVehiculo.get(7));
 					int capMaletero = Integer.parseInt(dataVehiculo.get(8));
 					
-					insert = "INSERT INTO coche (matricula, numPuertas, capMaletero) VALUES ('" + matricula + "', " 
+					insert = "INSERT INTO COCHE (matricula, numPuertas, capMaletero) VALUES ('" + matricula + "', " 
 					+ numPuertas + ", " + capMaletero + ");";
 					PreparedStatement ps2 = conexion.prepareStatement(insert);
 					ps2.executeUpdate();
@@ -307,7 +312,7 @@ public final class XML {
 					ps2.executeUpdate();
 				}
 				
-				String sql = "INSERT INTO vehiculo (matricula, numBastidor, serie, color, esPintado, numAsientos, precio, tipo) " + 
+				String sql = "INSERT INTO VEHICULO (matricula, numBastidor, serie, color, esPintado, numAsientos, precio, tipo) " + 
 				"VALUES ('" + matricula + "', " + numBastidor + ", '" + serie + "', '" + color + "', "  + esPintado + ", " + numAsientos + 
 				", " + precio + ", '" + tipo + "');";
 				

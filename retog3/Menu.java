@@ -4,11 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+import retog3.Console;
 import org.w3c.dom.DOMException;
-
-import test.Conexion;
-import test.Console;
 
 /**
  * Es la clase donde el usuario ejecutará el programa. Aquí se recogen la 
@@ -67,7 +64,7 @@ public final class Menu {
 		
 		Connection conexion = Conexion.conectarBase();
 		extra();
-		String aux;
+		String aux = "";
 		int op = 0;
 		
 		do {
@@ -115,10 +112,10 @@ public final class Menu {
 		} while (op != 6);
 		
 		} catch (DOMException e) {
-			//System.err.println("ERROR de jDOM: " + e.getMessage());
+			System.err.println("ERROR de jDOM: " + e.getMessage());
 			e.printStackTrace();
 		} catch (SQLException e) {
-			//System.err.println("ERROR jSQL: " + e.getMessage());
+			System.err.println("ERROR jSQL: " + e.getMessage());
 			e.printStackTrace();
 		} catch (Exception e) {
 			//System.err.println("ERROR: " + e.getMessage());
