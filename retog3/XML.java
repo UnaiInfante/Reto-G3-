@@ -59,10 +59,11 @@ public final class XML {
 	private XML() {}
 	
 	/**
-	 * Importa un registro XML a un archivo a un lugar específico. Este proceso
-	 * es automático: Crea un archivo con el registro o lo sobreescribe si ya existe
+	 * Exporta un registro XML a un archivo a una ruta específica o en el escritorio. Este 
+	 * proceso es automático: Crea un archivo con el registro o lo sobreescribe si ya existe
 	 * uno. El usuario puede elegir entre escribir la ruta del archivo o suponer que está 
-	 * en el escritorio, facilitando el acceso al registro.
+	 * en el escritorio, facilitando el acceso al registro. El usuario puede elegir entre exportar
+	 * el registro de la base de datos o el historial de la base de datos.
 	 * 
 	 * @param conexion La conexión de la base de datos.
 	 * 
@@ -79,99 +80,125 @@ public final class XML {
 		 * Aspectos generales: Se crean los objetos File y Document que servirán para la 
 		 * exportación del registro.
 		 */
-		File file = new File(System.getProperty("user.home") + "/Desktop/registro.xml");
-		FileWriter fw = new FileWriter(file);
+		String local = "\n" + System.getProperty("user.name") + "\\menú\\XML>";
+		String tabla1 = "", tabla2 = "";
+		System.out.println("Seleccione el tipo de registro.\n1)Registro de la base de datos.\n2)Historial.\n3)Cancelar operación");
+		int opcion;
 		
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder builder = factory.newDocumentBuilder();
-	    Document doc = builder.newDocument();
-	    
-	    /*
-	     * El documento separará coches y camiones, poniendo coches primero.
-	     */
-	    Statement st = conexion.createStatement();
-		ResultSet rs = st.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
-				+ "numPuertas, capMaletero FROM VEHICULO, COCHE WHERE vehiculo.matricula = coche.matricula;");
-		
-	    Element results = doc.createElement("Database");
-	    doc.appendChild(results);
-	  	ResultSetMetaData rsmd = rs.getMetaData();
-		int colCount = rsmd.getColumnCount();
-		
-		while (rs.next()) {
+		do {
 			
-			Element row = doc.createElement("vehiculo");
-		    results.appendChild(row);
-		    for (int i = 1; i <= colCount; i++) {
-		    	
-		    	String columnName = rsmd.getColumnName(i);
-			    Object value = rs.getObject(i);
-			    if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
-			    	
-			    	row.setAttribute("type", value.toString());
-				    
-				} else {
-					
-					Element node = doc.createElement(columnName);
-				    node.appendChild(doc.createTextNode(value.toString()));
-				    row.appendChild(node);
-					
-				}
-			    
-		    }
-		}
-		
-		/*
-		 * Sección de camiones.
-		 */
-		Statement st2 = conexion.createStatement();
-		ResultSet rs2 = st2.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
-				+ "carga, tipoMercancia FROM VEHICULO, CAMION WHERE vehiculo.matricula = camion.matricula");
-		
-		while (rs2.next()) {
+			System.out.print(local);
+			opcion = Console.readInt();
+			System.out.println(opcion);
+			if(opcion < 1 || opcion > 3) System.err.println("Valor incorrecto.");
 			
-				Element row = doc.createElement("vehiculo");
-				results.appendChild(row);
-				ResultSetMetaData rsmd2 = rs2.getMetaData();
-				int colCount2 = rsmd2.getColumnCount();
+		}while (opcion < 1 || opcion > 3);
+		
+		if(opcion == 1) {
+			tabla1 = "retog3.VEHICULO, retog3.COCHE";
+			tabla2 = "retog3.VEHICULO, retog3.CAMION";
+		} else if (opcion == 2) {
+			tabla1 = "retog3.VEHICULO_R, retog3.COCHE_R";
+			tabla2 = "retog3.VEHICULO_R, retog3.CAMION_R";
+		} 
+		
+		if(opcion != 3) {
+			File file = new File(System.getProperty("user.home") + "/Desktop/registro.xml");
+			FileWriter fw = new FileWriter(file);
+			
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		    DocumentBuilder builder = factory.newDocumentBuilder();
+		    Document doc = builder.newDocument();
+		    
+		    /*
+		     * El documento separará coches y camiones, poniendo coches primero.
+		     */
+		    Statement st = conexion.createStatement();
+		    
+			ResultSet rs = st.executeQuery("SELECT matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+					+ "numPuertas, capMaletero FROM " + tabla1 + " WHERE vehiculo.matricula = coche.matricula;");
+			
+		    Element results = doc.createElement("Database");
+		    doc.appendChild(results);
+		  	ResultSetMetaData rsmd = rs.getMetaData();
+			int colCount = rsmd.getColumnCount();
+			
+			while (rs.next()) {
 				
-				for (int i = 1; i <= colCount2; i++) {
-					
-					String columnName = rsmd2.getColumnName(i);
-					Object value = rs2.getObject(i);
-					if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
-						
-						row.setAttribute("type", value.toString());
-						
+				Element row = doc.createElement("vehiculo");
+			    results.appendChild(row);
+			    for (int i = 1; i <= colCount; i++) {
+			    	
+			    	String columnName = rsmd.getColumnName(i);
+				    Object value = rs.getObject(i);
+				    if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
+				    	
+				    	row.setAttribute("type", value.toString());
+					    
 					} else {
 						
 						Element node = doc.createElement(columnName);
-						node.appendChild(doc.createTextNode(value.toString()));
-						row.appendChild(node);
+					    node.appendChild(doc.createTextNode(value.toString()));
+					    row.appendChild(node);
 						
 					}
-					
-				}	
+				    
+			    }
 			}
-		   
-		    DOMSource domSource = new DOMSource(doc);
-		    TransformerFactory tf = TransformerFactory.newInstance();
-		    Transformer transformer = tf.newTransformer();
-		    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-		    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-		    StringWriter sw = new StringWriter();
-		    StreamResult sr = new StreamResult(sw);
-		    transformer.transform(domSource, sr);
-		    string = sw.toString();
-		    
-		    BufferedWriter bw = new BufferedWriter(fw);
-		    bw.write(string);
-		    bw.flush();
-		    bw.close();
-		    rs.close();
-		    conexion.close();
-		    System.out.println("Registro exportado.");
+			
+			/*
+			 * Sección de camiones.
+			 */
+			Statement st2 = conexion.createStatement();
+			ResultSet rs2 = st2.executeQuery("SELECT vehiculo.matricula, numBastidor, serie, esPintado, color, numAsientos, precio, tipo, "
+					+ "carga, tipoMercancia FROM " + tabla2 + " WHERE vehiculo.matricula = camion.matricula");
+			
+			while (rs2.next()) {
+				
+					Element row = doc.createElement("vehiculo");
+					results.appendChild(row);
+					ResultSetMetaData rsmd2 = rs2.getMetaData();
+					int colCount2 = rsmd2.getColumnCount();
+					
+					for (int i = 1; i <= colCount2; i++) {
+						
+						String columnName = rsmd2.getColumnName(i);
+						Object value = rs2.getObject(i);
+						if(rsmd.getColumnName(i).equalsIgnoreCase("TIPO")) {
+							
+							row.setAttribute("type", value.toString());
+							
+						} else {
+							
+							Element node = doc.createElement(columnName);
+							node.appendChild(doc.createTextNode(value.toString()));
+							row.appendChild(node);
+							
+						}
+						
+					}	
+				}
+			   
+			    DOMSource domSource = new DOMSource(doc);
+			    TransformerFactory tf = TransformerFactory.newInstance();
+			    Transformer transformer = tf.newTransformer();
+			    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+			    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			    StringWriter sw = new StringWriter();
+			    StreamResult sr = new StreamResult(sw);
+			    transformer.transform(domSource, sr);
+			    string = sw.toString();
+			    
+			    BufferedWriter bw = new BufferedWriter(fw);
+			    bw.write(string);
+			    bw.flush();
+			    bw.close();
+			    rs.close();
+			    System.out.println("Registro exportado.");
+		} else {
+			System.out.println("Cancelando operación...");
+		}
 	} 
 	
 	/**
@@ -199,7 +226,7 @@ public final class XML {
 			} else if (opcion == 2) {
 				path = System.getProperty("user.home") + "/Desktop/";
 				System.out.println("Escriba el nombre del archivo: ");
-				path+= Console.readString() + ".xml";
+				path+= Console.readString();
 			} else {
 				System.err.println("ERROR: Valor inválido. Inténtelo de nuevo.");
 			}
@@ -289,7 +316,6 @@ public final class XML {
 			}
 		}
 		System.out.println("Datos exportados a la base de datos.");
-		conexion.close();
 	}
 
 }

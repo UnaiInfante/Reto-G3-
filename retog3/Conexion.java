@@ -22,7 +22,7 @@ import java.sql.SQLException;
 	 * la base de datos local que se use y el usuario no tendrá que interactuar con
 	 * este campo.
 	 */
-	private static String name = "prueba";
+	private static String name = "retog3";
 	
 	/**
 	 * La dirección URL donde se encuentra la base de datos. Esta base 
@@ -72,7 +72,7 @@ import java.sql.SQLException;
 		System.out.println("Conectando...");
 		url = "jdbc:mysql://localhost:3306/" + name + "?characterEncoding=latin1";
 		conexion = DriverManager.getConnection(url, username, password);
-		System.out.println("Conexión completada.");
+		System.out.println("Conectado a: " + name + "\n");
 		return conexion;
 	}
 }
