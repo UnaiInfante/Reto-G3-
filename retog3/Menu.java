@@ -36,8 +36,7 @@ public final class Menu {
 		"|3. Vender un vehículo   |\n" + 
 		"|4. Pintar un vehículo   |\n" + 
 		"|5. Exportar registro    |\n" + 
-		"|6. Exportar registro    |\n" + 
-		"|7. Salir                |\n" + 
+		"|6. Salir                |\n" + 
 		"+------------------------+\n";
 		
 		System.out.println(menu);
