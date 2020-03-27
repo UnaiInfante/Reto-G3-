@@ -1,80 +1,111 @@
 package retog3;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.Node;
-import javax.xml.transform.TransformerException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.w3c.dom.DOMException;
-import org.xml.sax.SAXException;
 
-public class Menu {
+import test.Conexion;
+import test.Console;
+
+public final class Menu {
 	
-	public void printMenu(){
-		System.out.println("CONCESIONARIO ZUBIRI");
-		System.out.print("1. Ver Stock");
-		System.out.print("2. Comprar Vehiculo");
-		System.out.print("3. Vender Vehiculo");
-		System.out.print("4. Pintar vehiculo");
-		System.out.print("5. Salir");
-		int op =Console.readInt();
+	public static void printMenu(){
+		
+		String menu = 
+		"\n+------------------------+\n" +
+		"|CONCESIONARIO ZUBIRI    |\n" + 
+		"+------------------------+\n" +
+		"|Seleccione una opción:  |\n" + 
+		"|1. Ver stock            |\n" + 
+		"|2. Comprar un vehículo  |\n" + 
+		"|3. Vender un vehículo   |\n" + 
+		"|4. Pintar un vehículo   |\n" + 
+		"|5. Salir                |\n" + 
+		"+------------------------+\n";
+		
+		System.out.println(menu);
+	}
+	
+	private static void extra() {
+		
+		String bienvenida = "Bienvenido. Hoy es " + LocalDate.now() + " y son la(s) " +
+		LocalTime.now();
+		
+		System.out.println(bienvenida);
 		
 	}
 	
 	public static void main(String[] args) {
+		
 		try {
+		
 		Connection conexion = Conexion.conectarBase();
+		extra();
+		String aux;
+		int op = 0;
 		
-		int op=Console.readInt();
-		switch(op){
-		case(1):{ 
-			Vehiculo.mostrar(conexion);
-			break;
-		}
-		
-		case(2):{
-			Vehiculo.comprarVehiculo(conexion);
-			break;
-		}
-		case(3):{
-			Vehiculo.venderVehiculo(conexion);
-			break;
-		}
-		case(4):{
-			Vehiculo.pintarVehiculo(conexion);
-			break;
-		}
-		
-		}while(op!=5)
-		
-
-	
+		do {
+			String local = "\n" + System.getProperty("user.name") + "\\menú>";
+			printMenu();
+			System.out.print(local);
+			aux = Console.readString();
 			
+			if(revisarFormato(aux))  {
+				op = Integer.parseInt(aux);
+			} else if(!revisarFormato(aux)) {
+				System.err.println("Debe insertar un valor numérico entero.");
+			} else if(op < 1 || op > 5) {
+				System.err.println("Valor incorrecto, inténtelo de nuevo.");
+			}	
+			
+			switch(op) {
+			
+			case(1): 
+				Vehiculo.mostrar(conexion);
+				break;
+			
+			case(2):
+				Vehiculo.comprarVehiculo(conexion);
+				break;
+			
+			case(3):
+				Vehiculo.venderVehiculo(conexion);
+				break;
+			
+			case(4):
+				Vehiculo.pintarVehiculo(conexion);
+				break;
+				
+			case(5):
+				System.out.println("Saliendo del menú...");	
+			    break;
+			}
+			
+		} while (op != 5);
 		
-
-			/*
-			Statement sentencia = conexion.createStatement();
-			ResultSet rs = sentencia.executeQuery("SELECT * FROM student;");
-			XML.exportarRegistro(rs, conexion);*/
-			XML.importarRegistro(conexion);
-		
-		} catch (ParserConfigurationException e) {
-			System.err.println("Error de analización: " + e.getMessage());
-		} catch (IOException e) {
-			System.err.println("Error de I/O: " + e.getMessage());
-		} catch (SAXException e) {
-			System.err.println("Error SAX: " + e.getMessage());
 		} catch (DOMException e) {
-			System.err.println("ERROR DOM:" + e.getMessage());
+			System.err.println("ERROR de jDOM: " + e.getMessage());
 		} catch (SQLException e) {
-			System.err.println("ERROR SQL:" + e.getMessage());
+			System.err.println("ERROR jSQL: " + e.getMessage());
 		} catch (Exception e) {
 			System.err.println("ERROR: " + e.getMessage());
+		} finally {
+			System.out.println("Cerrando el programa...");
 		}
+	}
+	
+	private static boolean revisarFormato(String option) {
+		
+		try {
+			
+			Integer.parseInt(option);
+			
+		} catch(NumberFormatException e) {
+			return false;
+		}
+		return true;
 	}
 }
